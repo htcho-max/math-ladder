@@ -7,6 +7,8 @@ import { Rng, hashStr } from '../src/core/rng';
 import { splitMath } from '../src/core/mathtext';
 import type { Level, ProblemDraft } from '../src/core/types';
 import { polish } from '../src/core/polish';
+import { toChoice } from '../src/core/tochoice';
+import type { Problem } from '../src/core/types';
 
 const SEEDS = Number(process.env.SEEDS ?? 60);
 const only = process.env.GROUP;
@@ -112,6 +114,16 @@ for (const [group, courses] of Object.entries(GROUPS)) {
                 throw new Error(`${where}: 생성 중 예외 ${(e as Error).stack}`);
               }
               validate(d, where);
+              if (d.answer.type !== 'choice') {
+                const c = toChoice({ ...d, key: `${u.id}/${sk.id}/${level}/${seed}`, unitId: u.id, skillId: sk.id, level, seed } as Problem);
+                validate(c, where + ' (객관식 변환)');
+                if (c.answer.type === 'choice') {
+                  expect(c.answer.choices.length, where + ' 객관식 보기 수').toBeGreaterThanOrEqual(4);
+                  if (u.id.startsWith('e') && !JSON.stringify(d.answer).includes('-')) {
+                    expect(c.answer.choices.some((x) => /\$-/.test(x)), where + ' 초등 음수 보기: ' + c.answer.choices.join(' | ')).toBe(false);
+                  }
+                }
+              }
               expect(JSON.stringify(mk()), where + ' 같은 시드인데 다른 문제 (Math.random 사용?)').toBe(JSON.stringify(d));
               qs.add(d.q + JSON.stringify(d.answer) + (d.fig ?? '') + JSON.stringify(d.table ?? ''));
             }

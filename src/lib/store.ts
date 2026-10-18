@@ -13,6 +13,14 @@ export interface Settings {
   geminiKey: string;
   geminiModel: string;
   theme: 'auto' | 'light' | 'dark';
+  /** 문제 형식: 섞기(기본) / 주관식 위주 / 객관식 위주 */
+  choiceMode?: 'mix' | 'open' | 'choice';
+}
+
+export const CHOICE_RATIO = { mix: 0.5, open: 0, choice: 0.8 } as const;
+/** 연습에서 객관식이 차지할 목표 비율 */
+export function choiceRatio(): number {
+  return CHOICE_RATIO[getState().settings.choiceMode ?? 'mix'];
 }
 
 export interface SkillStat {
@@ -82,7 +90,7 @@ export interface State {
 }
 
 const emptyData = (): ProfileData => ({ skills: {}, days: {}, wrong: {}, exams: [] });
-const defaultSettings: Settings = { geminiKey: '', geminiModel: 'gemini-2.5-flash-lite', theme: 'auto' };
+const defaultSettings: Settings = { geminiKey: '', geminiModel: 'gemini-2.5-flash-lite', theme: 'auto', choiceMode: 'mix' };
 
 function read<T>(k: string): T | null {
   try {

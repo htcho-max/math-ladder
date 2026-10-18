@@ -122,6 +122,25 @@ export function SettingsPage() {
       </section>
 
       <section className="card form">
+        <div className="card-h">문제 형식</div>
+        <div className="frow">
+          <span>연습 문제</span>
+          <div className="seg">
+            {([
+              ['mix', '섞어서'],
+              ['open', '주관식 위주'],
+              ['choice', '객관식 위주'],
+            ] as const).map(([k, label]) => (
+              <button key={k} className={(s.settings.choiceMode ?? 'mix') === k ? 'on' : ''} onClick={() => updateSettings({ choiceMode: k })}>
+                {label}
+              </button>
+            ))}
+          </div>
+        </div>
+        <div className="muted small">섞어서: 주관식과 객관식이 반반쯤 나와요. 시험(단원평가·중간·기말)은 실제 학교 시험처럼 객관식이 더 많이 나와요.</div>
+      </section>
+
+      <section className="card form">
         <div className="card-h">화면</div>
         <div className="frow">
           <span>테마</span>

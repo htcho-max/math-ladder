@@ -56,7 +56,7 @@ export function AnswerInput({
           return (
             <button key={i} className={cls} role="radio" aria-checked={sel} disabled={locked} onClick={() => onChange(i)}>
               <span className="cnum">{CIRCLED[i]}</span>
-              <MathText as="span" text={c} />
+              <MathText as="span" text={c.replace(/\\frac/g, '\\dfrac')} />
             </button>
           );
         })}

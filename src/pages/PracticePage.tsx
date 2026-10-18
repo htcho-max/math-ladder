@@ -2,12 +2,12 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { CONTENT } from '../content';
 import { COURSE_BY_ID, UNIT_BY_ID } from '../core/curriculum';
 import { judge, type UserAnswer, type Verdict } from '../core/check';
-import { makeProblem, problemFromKey } from '../core/problem';
+import { makeProblem, pickChoice, problemFromKey } from '../core/problem';
 import { randomSeed } from '../core/rng';
 import type { Level, Problem } from '../core/types';
 import { dueWrong, recordAnswer, skillScore, startLevel, unitMastery } from '../lib/mastery';
 import { navigate } from '../lib/router';
-import { getState, useStore } from '../lib/store';
+import { choiceRatio, getState, useStore } from '../lib/store';
 import { Header, Ring, UnitLink } from '../ui/bits';
 import { AnswerInput, Feedback, ProblemBody } from '../ui/ProblemView';
 import { MathText } from '../ui/MathText';
@@ -59,7 +59,8 @@ function buildPlan(mode: PracticeMode): Plan | null {
             .sort((a, b) => a.w - b.w);
           skillId = ranked[0].id;
         }
-        return { p: makeProblem(u.id, skillId, level, randomSeed()) };
+        const seed = randomSeed();
+        return { p: makeProblem(u.id, skillId, level, seed, pickChoice(seed, choiceRatio(), u.id)) };
       },
     };
   }
@@ -89,7 +90,10 @@ function buildPlan(mode: PracticeMode): Plan | null {
     total: 3,
     startLevel: orig.level,
     adaptive: false,
-    next: () => ({ p: makeProblem(orig.unitId, orig.skillId, orig.level, randomSeed()), reviewOf: orig.key }),
+    next: () => {
+      const seed = randomSeed();
+      return { p: makeProblem(orig.unitId, orig.skillId, orig.level, seed, pickChoice(seed, choiceRatio(), orig.unitId)), reviewOf: orig.key };
+    },
   };
 }
 

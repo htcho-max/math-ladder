@@ -2,11 +2,11 @@
 import { CONTENT } from '../content';
 import { COURSE_BY_ID, UNIT_BY_ID, prereqChain, unitsOf, UNITS } from '../core/curriculum';
 import { judge, type UserAnswer } from '../core/check';
-import { problemFromKey } from '../core/problem';
+import { pickChoice, problemFromKey } from '../core/problem';
 import { Rng, randomSeed } from '../core/rng';
-import { numChoices } from '../core/tex';
-import { autoDisplay } from '../core/check';
-import type { AnswerSpec, Level, Problem } from '../core/types';
+import { toChoice } from '../core/tochoice';
+import { choiceRatio } from './store';
+import type { Level, Problem } from '../core/types';
 import type { EssayItem, ExamKind } from './store';
 
 export type Mix = 'basic' | 'standard' | 'hard';
@@ -39,13 +39,8 @@ export interface ExamState {
 export function examProblem(it: ExamItem): Problem | null {
   const p = problemFromKey(it.key);
   if (!p) return null;
-  if (it.asChoice && p.answer.type === 'num') {
-    const a = p.answer;
-    const ch = numChoices(new Rng(p.seed + 7), a.value, [], 5, a.display ?? autoDisplay(a.value, p.unitId));
-    const choices = a.unit ? ch.choices.map((c) => `${c} ${a.unit}`) : ch.choices;
-    const answer: AnswerSpec = { type: 'choice', choices, index: ch.index };
-    return { ...p, answer };
-  }
+  // 예전 형식(asChoice 플래그)도 지원. 새 시험은 키 끝 '/c' 로 객관식 표시
+  if (it.asChoice && p.answer.type !== 'choice') return toChoice(p);
   return p;
 }
 
@@ -72,8 +67,10 @@ export function buildExam(opts: { kind: ExamKind; title: string; units: string[]
       const key = `${u}/${sk}/${level}/${seed}`;
       const p = problemFromKey(key);
       if (!p) continue;
-      const asChoice = p.answer.type === 'num' && r.chance(0.4);
-      items.push({ key, asChoice, order: units.indexOf(u) * 10 + level, level });
+      // 시험은 객관식 위주(실제 내신처럼 약 70%). 설정이 '주관식 위주'면 바꾸지 않음
+      const target = choiceRatio() === 0 ? 0 : Math.max(0.7, choiceRatio());
+      const asChoice = p.answer.type !== 'choice' && pickChoice(seed, target, u);
+      items.push({ key: asChoice ? toChoice(p).key : key, asChoice: false, order: units.indexOf(u) * 10 + level, level });
     }
   }
   items.sort((a, b) => a.order - b.order);
