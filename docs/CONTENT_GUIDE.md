@@ -1,0 +1,60 @@
+# 수학 사다리 — 콘텐츠(단원별 개념 + 문제 생성기) 작성 가이드
+
+앱: 초1 덧셈부터 고등 미적분·기하까지 2022 개정 교육과정 전 단원을 단계적으로 배우는 PWA.
+학생(자녀)이 개념 카드를 읽고 → 유형별 연습(난이도 1·2·3 적응형) → 단원평가 / 중간·기말 모의고사를 봅니다.
+문제는 **규칙 기반 생성기**로 무한히 만들어지고, 시드로 똑같이 다시 만들 수 있어야 합니다 (오답노트가 시드만 저장).
+
+## 파일 구조 (core 는 수정 금지 — 버그를 찾으면 최종 보고에 적기)
+- `src/core/types.ts` — 타입 약속 (ProblemDraft, AnswerSpec, Skill, Concept, UnitContent, ContentMap). **먼저 꼭 읽기**
+- `src/core/curriculum.ts` — 전체 과정·단원 목록(단원 id, 제목, 요약). 단원 id = `${과정id}-${번호}` 예 `e3a-2`, `hc1-4`
+- `src/core/rng.ts` — 시드 난수 `Rng` (int, nonzero, pick, sample, shuffle, chance, sign). **Math.random 금지**
+- `src/core/frac.ts` — 분수 `F` (add/sub/mul/div/pow/tex()/mixedTex()/value, 자동 약분)
+- `src/core/nt.ts` — gcd, lcm, isPrime, divisors, factorize, round(부동소수 정리), factorial, nCr, nPr, simplifySqrt, range
+- `src/core/tex.ts` — comma(천 단위), dec, paren, signed, frac, numTex, sqrtTex, poly(다항식), termsTex, linTex, **makeChoices**, **numChoices**
+- `src/core/fig.ts` — SVG 그림: `Svg`(line/poly/rect/circle/dot/text/arc/rightAngle/path), `Plane`(수학 좌표평면: fn/point/seg/polygon/label), `clock`, `numberLine`, `barChart`, `lineChart`, `regularPolygon`
+- `src/content/m12.ts` 앞부분 `m1a-1 소인수분해` = **작성 예시**. 그대로 따라 하세요.
+- 내 담당 파일: `src/content/<그룹>.ts` 는 `export const content: ContentMap` 를 내보냄. 파일이 너무 길면 `src/content/<그룹>/*.ts` 로 쪼개고 `<그룹>.ts` 에서 합쳐 내보내도 됨. **담당 파일 밖은 건드리지 말 것.**
+
+## 단원마다 할 일
+```ts
+'e3a-3': {
+  concepts: [ { title, body, example?: { q, a } }, ... ],   // 3~5개
+  skills:   [ { id: 'share-equally', title: '똑같이 나누기', gen(r, level) { ... return ProblemDraft } }, ... ], // 4~6개 (최소 3)
+}
+```
+### 개념 카드 (concepts)
+- 그 단원 교과서의 핵심 개념을 빠짐없이, 학생 눈높이로. 초등은 "~해요" 존댓말로 쉽게, 중·고등은 정의·성질·공식을 정확하고 간결하게.
+- 이전 학년 개념과의 **연결**을 한 줄씩 짚어 주면 좋음 (예: "곱셈구구를 거꾸로 생각하면 나눗셈이에요").
+- body 문법: `$인라인 수식$`, `$$블록 수식$$`, `**굵게**`, `\n` 줄바꿈, 줄 앞 `- ` 목록.
+
+### 유형(skills) — 교과서·익힘책·단원평가에 실제로 나오는 문제 유형을 고루
+- 계산 연습, 개념 확인(객관식), 문장제(활용), 시험 단골 응용 유형을 섞기.
+- level 1 = 기본(교과서 예제), 2 = 보통(익힘책), 3 = 심화(단원평가·내신 서술형/응용 수준). 숫자 크기, 단계 수, 함정 요소로 난이도 차이를 분명히.
+- 같은 레벨에서 시드 60개로 **서로 다른 문제가 최소 4개 이상** (실제로는 훨씬 다양하게).
+- 단원에 맞는 수 범위를 지키기 (예: 초1-1은 9 이하, 초등은 음수 금지, 초3 나눗셈은 곱셈구구 범위 …).
+- 문장제는 한국어 자연스럽게, 등장인물 이름·물건 다양하게(민수, 서연, 지호 …).
+
+### ProblemDraft 작성 규칙
+- `q`: 한국어 문장 + 수식은 반드시 `$…$` 안에. 수식 안 한국어는 `\text{사과}` 로. 초등 곱하기·나누기는 `\times`, `\div`. 빈칸은 `\square`.
+- `answer` 고르기:
+  - `{type:'num', value, unit?, display?, requireReduced?}` — 학생이 숫자를 직접 입력 (정수·소수·분수 3/4·대분수 "2 1/3" 입력 가능, 값으로 채점). 분수 정답이면 display:'frac' 또는 'mixed', 약분 단원이면 requireReduced:true.
+  - `{type:'fields', fields:[{label:'몫', value}, {label:'나머지', value}]}` — 답이 여러 칸 (좌표 x,y / 몫·나머지 / 시·분 …).
+  - `{type:'set', values:[2,-3]}` — 순서 없는 여러 답 (방정식의 근 등).
+  - `{type:'choice', choices, index}` — 객관식. **makeChoices / numChoices 사용** (중복 제거·섞기 처리). 보기 4~5개, 오답은 학생이 흔히 하는 실수에서 만들기(부호 실수, 받아올림 빼먹음, 공식 혼동 …). 수식·무리수·식 답(인수분해 결과, 그래프 모양, 참/거짓 고르기 등)은 객관식으로.
+  - 유형 전체로 보면 객관식과 직접 입력이 적당히 섞이게 (대략 절반씩).
+- `steps`: 풀이 과정 2~5줄, 실제로 따라 할 수 있게. 마지막 줄에 정답이 나오도록.
+- `hint`: 선택. 풀이의 첫 걸음을 살짝.
+- `fig`: 도형·시계·그래프·수직선이 있어야 자연스러운 문제는 그림을 붙이기 (fig.ts). 그림 치수·라벨이 문제 수치와 일치해야 함. 크기 대략 가로 160~320px.
+- `table`: 자료·대응 관계 표가 필요하면 `[['요일','월','화'], ['개수','3','5']]` (첫 행 머리글).
+- **정답은 반드시 매개변수에서 계산**해서 넣기. 하드코딩 금지. 부동소수는 `round()`/`F` 로 정리 (0.1+0.2 문제). 보기 문자열과 정답 계산이 어긋나지 않게.
+- 답이 유일하게 정해지는지 확인 (조건이 모자라 답이 여러 개가 되는 문제 금지). 답이 지나치게 지저분한 수가 되지 않게 매개변수를 역으로 설계 (예: 근을 먼저 정하고 방정식을 만든다).
+- 그림을 직접 그려야 답할 수 있는 문제(작도, 그래프 그리기)는 객관식/수치형으로 바꾸기.
+
+## 검증 (반드시)
+1. 전수 검사: `GROUP=<그룹> npx vitest run tests/content.test.ts` — 모든 단원·유형·레벨 × 시드 60개 생성, KaTeX 파싱, 보기 중복, NaN, 결정성, 다양성 확인. 전부 통과해야 함. (`STRICT=0` 을 붙이면 아직 안 만든 단원은 건너뜀 — 작업 중에만)
+2. 눈으로 검토: `npx vite-node scripts/samples.ts -- <단원id 또는 과정id> 2` 로 문제·정답·풀이를 출력해서 **정답이 수학적으로 맞는지 직접 확인**. 특히 문장제와 보기.
+3. 타입 검사: `npx tsc --noEmit -p . 2>&1 | grep 'src/content/<그룹>'` 에 오류 없어야 함 (다른 그룹 파일 오류는 무시).
+- 임시 파일은 scratchpad 폴더 안에. 다른 그룹 파일 수정 금지.
+
+## 최종 보고 (짧게)
+단원별 유형 수, 테스트 결과, 일부러 단순화한 부분, core 에서 발견한 문제.
