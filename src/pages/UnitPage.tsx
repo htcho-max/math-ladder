@@ -4,7 +4,8 @@ import { COURSE_BY_ID, UNIT_BY_ID, nextUnits } from '../core/curriculum';
 import { skillScore, unitMastery } from '../lib/mastery';
 import { navigate } from '../lib/router';
 import { useStore } from '../lib/store';
-import { Bar, Header, Ring, StrandTag, UnitLink } from '../ui/bits';
+import { Bar, Header, Ring, Stars, StrandTag, UnitLink } from '../ui/bits';
+import { starsFor } from '../lib/reward';
 import { MathText } from '../ui/MathText';
 import type { Concept } from '../core/types';
 
@@ -27,8 +28,12 @@ export function UnitPage({ id }: { id: string }) {
             <div className="uh-sum">{u.summary}</div>
             <StrandTag s={u.strand} />
           </div>
-          <Ring value={m} size={64} />
+          <div className="uh-ring">
+            <Ring value={m} size={64} />
+            {c && <Stars n={starsFor(m)} />}
+          </div>
         </div>
+        {c && <div className="muted small starhelp">숙련도 50 → ★, 80 → ★★, 95 → ★★★ · 심화 문제를 맞혀야 별 세 개를 받을 수 있어요</div>}
         {c && (
           <div className="btnrow">
             <button className="btn primary" onClick={() => navigate(`/practice/u/${id}`)}>

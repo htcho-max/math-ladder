@@ -1,3 +1,4 @@
+import { rwOf, setGoal } from '../lib/reward';
 import { useRef, useState } from 'react';
 import { COURSES } from '../core/curriculum';
 import {
@@ -119,6 +120,32 @@ export function SettingsPage() {
           <span>모델</span>
           <input type="text" value={s.settings.geminiModel} onChange={(e) => updateSettings({ geminiModel: e.target.value.trim() || 'gemini-2.5-flash-lite' })} />
         </label>
+      </section>
+
+      <section className="card form">
+        <div className="card-h">목표와 보상</div>
+        <div className="frow">
+          <span>하루 목표</span>
+          <div className="seg">
+            {[10, 20, 30, 50].map((g) => (
+              <button key={g} className={rwOf(s.data).goal === g ? 'on' : ''} onClick={() => setGoal(g)}>
+                {g}문제
+              </button>
+            ))}
+          </div>
+        </div>
+        <div className="frow">
+          <span>축하 효과</span>
+          <div className="seg">
+            <button className={s.settings.effects !== false ? 'on' : ''} onClick={() => updateSettings({ effects: true })}>
+              켜기
+            </button>
+            <button className={s.settings.effects === false ? 'on' : ''} onClick={() => updateSettings({ effects: false })}>
+              끄기
+            </button>
+          </div>
+        </div>
+        <div className="muted small">하루 목표는 지금 프로필에만 적용돼요. 축하 효과는 레벨 업·배지 때 색종이가 날려요.</div>
       </section>
 
       <section className="card form">

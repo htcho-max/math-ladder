@@ -10,9 +10,12 @@ import { WrongPage } from './pages/WrongPage';
 import { ExamPrint, ExamResult, ExamRun, ExamSetup } from './pages/ExamPage';
 import { StatsPage } from './pages/StatsPage';
 import { SettingsPage } from './pages/SettingsPage';
+import { BadgesPage } from './pages/BadgesPage';
+import { Toasts } from './ui/Celebrate';
+import { applyFreezes } from './lib/reward';
 
 const TABS = [
-  { path: '', name: '홈', ic: '🏠', match: [''] },
+  { path: '', name: '홈', ic: '🏠', match: ['', 'badges'] },
   { path: 'map', name: '학습 지도', ic: '🗺️', match: ['map', 'unit', 'practice'] },
   { path: 'exam', name: '시험', ic: '📝', match: ['exam'] },
   { path: 'wrong', name: '오답노트', ic: '📒', match: ['wrong', 'review', 'retry', 'similar'] },
@@ -48,6 +51,8 @@ function Page({ r }: { r: string[] }) {
       return <StatsPage />;
     case 'settings':
       return <SettingsPage />;
+    case 'badges':
+      return <BadgesPage />;
     default:
       return <NotFound />;
   }
@@ -58,6 +63,9 @@ export function App() {
   const theme = useStore((s) => s.settings.theme);
   const storageError = useStore((s) => s.storageError);
   const due = useStore((s) => dueWrong(s.data).length);
+  useEffect(() => {
+    applyFreezes();
+  }, []);
   useEffect(() => {
     const el = document.documentElement;
     if (theme === 'auto') delete el.dataset.theme;
@@ -87,6 +95,7 @@ export function App() {
       <main>
         <Page key={raw} r={parts} />
       </main>
+      <Toasts />
       <nav className="tabbar noprint">
         {TABS.map((t) => (
           <button key={t.path} className={t.match.includes(top) ? 'on' : ''} onClick={() => navigate('/' + t.path)}>

@@ -8,6 +8,8 @@ import type { Level, Problem } from '../core/types';
 import { dueWrong, recordAnswer, skillScore, startLevel, unitMastery } from '../lib/mastery';
 import { navigate } from '../lib/router';
 import { choiceRatio, getState, useStore } from '../lib/store';
+import { rewardAnswer, todayQuests, questText, levelInfo, rwOf } from '../lib/reward';
+import { unitAttempted } from '../lib/mastery';
 import { Header, Ring, UnitLink } from '../ui/bits';
 import { AnswerInput, Feedback, ProblemBody } from '../ui/ProblemView';
 import { MathText } from '../ui/MathText';
@@ -116,6 +118,10 @@ export function PracticePage({ mode }: { mode: PracticeMode }) {
   const [hint, setHint] = useState(false);
   const [done, setDone] = useState<Done[]>([]);
   const [finished, setFinished] = useState(false);
+  const [combo, setCombo] = useState(0);
+  const [gain, setGain] = useState(0); // 이번 문제 XP
+  const [sessionXp, setSessionXp] = useState(0);
+  const startXp = useRef(rwOf(getState().data).xp);
   const nextBtn = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
@@ -138,7 +144,13 @@ export function PracticePage({ mode }: { mode: PracticeMode }) {
     if (ans === undefined || ans === '' || (Array.isArray(ans) && ans.every((x) => !x))) return;
     const v = judge(cur.p.answer, ans);
     setVerdict(v);
+    const newUnit = !unitAttempted(getState().data, cur.p.unitId);
     recordAnswer(cur.p, v.ok, cur.reviewOf);
+    const c = v.ok ? combo + 1 : 0;
+    setCombo(c);
+    const x = rewardAnswer(cur.p, v.ok, { combo: c, review: !!cur.reviewOf, newUnit });
+    setGain(x);
+    setSessionXp((t) => t + x);
     setDone((x) => [...x, { p: cur.p, ok: v.ok }]);
     if (plan.adaptive) {
       if (v.ok) {
@@ -181,6 +193,10 @@ export function PracticePage({ mode }: { mode: PracticeMode }) {
             {done.length}문제 중 {correct}문제 정답
           </div>
           <div className="resmsg">{rate >= 0.9 ? '완벽해요! 👏' : rate >= 0.7 ? '잘하고 있어요!' : rate >= 0.5 ? '조금만 더 연습해 봐요.' : '개념을 다시 읽고 천천히 풀어 봐요.'}</div>
+          <div className="xp-sum">
+            <span className="xp-pill big">+{sessionXp} XP</span>
+            {levelInfo(rwOf(d).xp).level > levelInfo(startXp.current).level && <span className="lvup">레벨 업! Lv.{levelInfo(rwOf(d).xp).level}</span>}
+          </div>
           {u && (
             <div className="mchange">
               <Ring value={startMastery.current} size={48} />
@@ -201,6 +217,20 @@ export function PracticePage({ mode }: { mode: PracticeMode }) {
             </div>
           </section>
         )}
+        <section className="card">
+          <div className="card-h">오늘의 퀘스트</div>
+          <div className="quests">
+            {todayQuests(d).map((q) => (
+              <div key={q.id} className={'quest' + (q.done ? ' done' : '')}>
+                <span className="q-check">{q.done ? '✓' : ''}</span>
+                <span className="q-t">{questText(q)}</span>
+                <span className="q-n">
+                  {q.progress}/{q.target}
+                </span>
+              </div>
+            ))}
+          </div>
+        </section>
         <section className="card">
           <div className="card-h">푼 문제</div>
           <div className="donelist">
@@ -232,6 +262,11 @@ export function PracticePage({ mode }: { mode: PracticeMode }) {
   return (
     <div className="page practice">
       <Header title={plan.title} back={plan.back}>
+        {combo >= 2 && (
+          <span className="combo" key={combo}>
+            🔥 {combo}연속
+          </span>
+        )}
         <span className="muted small">
           {idx + 1} / {plan.total}
         </span>
@@ -253,6 +288,13 @@ export function PracticePage({ mode }: { mode: PracticeMode }) {
         {!verdict && hint && p.hint && (
           <div className="hint">
             💡 <MathText as="span" text={p.hint} />
+          </div>
+        )}
+        {verdict && (
+          <div className="xp-row">
+            <span className={'xp-pill' + (verdict.ok ? '' : ' dim')}>+{gain} XP</span>
+            {verdict.ok && combo > 0 && combo % 5 === 0 && <span className="muted small">{combo}연속 보너스!</span>}
+            {!verdict.ok && <span className="muted small">틀려도 도전한 만큼 XP를 받아요</span>}
           </div>
         )}
         {verdict && <Feedback p={p} verdict={verdict} mine={ans} />}

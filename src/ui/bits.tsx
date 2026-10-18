@@ -66,3 +66,15 @@ export function Header({ title, back, children }: { title: string; back?: string
     </div>
   );
 }
+
+export function Stars({ n, max = 3, small }: { n: number; max?: number; small?: boolean }) {
+  return (
+    <span className={'stars' + (small ? ' sm' : '')} aria-label={`별 ${n}개`}>
+      {Array.from({ length: max }, (_, i) => (
+        <span key={i} className={i < n ? 'on' : ''}>
+          ★
+        </span>
+      ))}
+    </span>
+  );
+}

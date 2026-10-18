@@ -13,6 +13,8 @@ export interface Settings {
   geminiKey: string;
   geminiModel: string;
   theme: 'auto' | 'light' | 'dark';
+  /** 축하 효과(색종이) */
+  effects?: boolean;
   /** 문제 형식: 섞기(기본) / 주관식 위주 / 객관식 위주 */
   choiceMode?: 'mix' | 'open' | 'choice';
 }
@@ -74,10 +76,35 @@ export interface EssayItem {
   self?: 'ok' | 'part' | 'no';
 }
 
+/** 동기 부여 기록 (reward.ts) */
+export interface Quest {
+  id: string;
+  kind: 'solve' | 'correct' | 'combo' | 'hard' | 'review' | 'new-unit' | 'star' | 'exam';
+  target: number;
+  progress: number;
+  done: boolean;
+}
+export interface RewardData {
+  xp: number;
+  freezes: number;
+  frozen: Record<string, true>;
+  badges: Record<string, number>;
+  quests?: { day: string; list: Quest[]; bonus?: boolean };
+  goal: number;
+  goalDays: Record<string, true>;
+  questDays: Record<string, true>;
+  maxCombo: number;
+  hardCorrect: number;
+  stars: Record<string, number>;
+  streakRewarded: number;
+  rootStar?: boolean;
+}
+
 export interface ProfileData {
   skills: Record<string, SkillStat>; // `${unitId}/${skillId}`
   days: Record<string, { n: number; c: number }>; // YYYY-MM-DD
   wrong: Record<string, WrongItem>;
+  rw?: RewardData;
   exams: ExamRecord[];
 }
 
@@ -90,7 +117,7 @@ export interface State {
 }
 
 const emptyData = (): ProfileData => ({ skills: {}, days: {}, wrong: {}, exams: [] });
-const defaultSettings: Settings = { geminiKey: '', geminiModel: 'gemini-2.5-flash-lite', theme: 'auto', choiceMode: 'mix' };
+const defaultSettings: Settings = { geminiKey: '', geminiModel: 'gemini-2.5-flash-lite', theme: 'auto', choiceMode: 'mix', effects: true };
 
 function read<T>(k: string): T | null {
   try {

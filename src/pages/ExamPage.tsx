@@ -5,6 +5,7 @@ import { hasContent } from '../core/problem';
 import { makeEssays } from '../lib/ai';
 import { buildExam, diagUnits, examProblem, examTitle, gradeExam, MIX, type ExamState, type Mix } from '../lib/exam';
 import { recordAnswer, unitMastery } from '../lib/mastery';
+import { rewardExam } from '../lib/reward';
 import { navigate } from '../lib/router';
 import { activeProfile, getState, readProfileKey, updateData, useStore, writeProfileKey, type ExamKind, type ExamRecord } from '../lib/store';
 import { Bar, Header, UnitLink } from '../ui/bits';
@@ -324,6 +325,7 @@ export function ExamRun() {
       essays: ex.essays,
     };
     updateData((d) => ({ ...d, exams: [rec, ...d.exams.filter((e) => e.id !== rec.id)].slice(0, 60) }));
+    rewardExam(rec.score, res.per.map((x) => x.problem.unitId));
     writeProfileKey('exam', null);
     navigate(`/exam/result/${rec.id}`, true);
   }

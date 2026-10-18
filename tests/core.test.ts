@@ -71,3 +71,21 @@ describe('교육과정·문제 키', () => {
     expect(problemFromKey('nope/x/1/1')).toBeNull();
   });
 });
+
+import { levelInfo, levelNeed, starsFor, BADGES } from '../src/lib/reward';
+describe('보상', () => {
+  it('레벨 곡선', () => {
+    expect(levelInfo(0).level).toBe(1);
+    expect(levelInfo(99).level).toBe(1);
+    expect(levelInfo(100).level).toBe(2);
+    expect(levelInfo(100 + 150).level).toBe(3);
+    expect(levelNeed(3)).toBe(200);
+    expect(levelInfo(100000).title).toBe('수학 전설');
+  });
+  it('별', () => {
+    expect([null, 0, 49, 50, 79, 80, 94, 95, 100].map(starsFor)).toEqual([0, 0, 0, 1, 1, 2, 2, 3, 3]);
+  });
+  it('배지 id 유일', () => {
+    expect(new Set(BADGES.map((b) => b.id)).size).toBe(BADGES.length);
+  });
+});

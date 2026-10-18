@@ -107,8 +107,9 @@ export function dueWrong(d: ProfileData, now = Date.now()): WrongItem[] {
 export function streak(d: ProfileData): number {
   let n = 0;
   let t = Date.now();
-  if (!d.days[dayKey(t)]?.n) t -= DAY; // 오늘 아직 안 했으면 어제부터
-  while (d.days[dayKey(t)]?.n) {
+  const on = (k: string) => !!d.days[k]?.n || !!d.rw?.frozen[k];
+  if (!on(dayKey(t))) t -= DAY; // 오늘 아직 안 했으면 어제부터
+  while (on(dayKey(t))) {
     n++;
     t -= DAY;
   }
