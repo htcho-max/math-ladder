@@ -200,6 +200,9 @@ export const BADGES: BadgeDef[] = [
   { id: 'exam1', ic: '📝', name: '첫 시험', desc: '시험 한 번 보기', group: '시험', test: (c) => c.exams >= 1 },
   { id: 'exam90', ic: '🎖️', name: '90점 돌파', desc: '시험 90점 이상', group: '시험', test: (c) => c.best >= 90 },
   { id: 'exam100', ic: '💎', name: '만점', desc: '시험 100점', group: '시험', test: (c) => c.best >= 100 },
+  { id: 'clinic1', ic: '🦸', name: '첫 극복', desc: '틀린 문제를 쌍둥이 문제로 극복하기', group: '오답 복습', test: (c) => (c.rw.overcome ?? 0) >= 1 },
+  { id: 'clinic20', ic: '💪', name: '오답 극복왕', desc: '쌍둥이 문제로 오답 20번 극복', group: '오답 복습', test: (c) => (c.rw.overcome ?? 0) >= 20 },
+  { id: 'certified', ic: '🎓', name: '실력 인증', desc: '수준 진단으로 이전 단원 인증받기', group: '별과 단원', test: (c) => Object.keys(c.rw.certified ?? {}).length >= 1 },
   { id: 'review10', ic: '🩹', name: '오답 졸업 10', desc: '오답노트 10문제 졸업', group: '오답 복습', test: (c) => c.graduated >= 10 },
   { id: 'review50', ic: '🧠', name: '오답 졸업 50', desc: '오답노트 50문제 졸업', group: '오답 복습', test: (c) => c.graduated >= 50 },
   { id: 'lvl5', ic: '🧭', name: '레벨 5', desc: '레벨 5 달성', group: '레벨', test: (c) => c.level >= 5 },
@@ -255,6 +258,7 @@ interface Gain {
   combo?: number;
   newUnit?: boolean;
   exam?: boolean;
+  twin?: boolean;
 }
 
 /** 보상 처리 공통: 데이터 갱신 + 이벤트 */
@@ -272,6 +276,10 @@ function apply(g: Gain, starUnitId?: string): number {
       if (g.combo > 0 && g.combo % 5 === 0) xp += 10; // 5연속마다 보너스
     }
     if (g.hard) rw.hardCorrect++;
+    if (g.twin) {
+      rw.overcome = (rw.overcome ?? 0) + 1;
+      xp += 30;
+    }
 
     // 별
     if (starUnitId) {
@@ -354,9 +362,42 @@ function apply(g: Gain, starUnitId?: string): number {
 }
 
 /** 연습 문제 하나 채점 후 (recordAnswer 다음에 호출). 반환: 이번에 얻은 XP */
-export function rewardAnswer(p: Problem, ok: boolean, o: { combo: number; review: boolean; newUnit: boolean }): number {
-  const base = ok ? [10, 15, 20][p.level - 1] : 2;
-  return apply({ xp: base, correct: ok, answered: true, hard: ok && p.level === 3, review: o.review, combo: o.combo, newUnit: o.newUnit }, p.unitId);
+/** 힌트를 단계별로 볼수록 정답 XP 가 줄어듦 */
+export const HINT_XP = [1, 0.8, 0.6, 0.5];
+
+export function rewardAnswer(p: Problem, ok: boolean, o: { combo: number; review: boolean; newUnit: boolean; hints?: number; twin?: boolean }): number {
+  const base = ok ? Math.round([10, 15, 20][p.level - 1] * HINT_XP[Math.min(3, o.hints ?? 0)]) : 2;
+  return apply({ xp: base, correct: ok, answered: true, hard: ok && p.level === 3 && !o.hints, review: o.review, combo: o.combo, newUnit: o.newUnit, twin: ok && o.twin }, p.unitId);
+}
+
+/** 수준 진단에서 맞힌 단원을 별 1개(숙련도 50) 상태로 인증 */
+export function certifyUnits(unitIds: string[]): string[] {
+  const done: string[] = [];
+  updateData((d) => {
+    const skills = { ...d.skills };
+    const rw = rwOf(d);
+    const certified = { ...(rw.certified ?? {}) };
+    for (const u of unitIds) {
+      const c = CONTENT[u];
+      if (!c) continue;
+      let changed = false;
+      for (const sk of c.skills) {
+        const k = `${u}/${sk.id}`;
+        const cur = skills[k] ?? { score: 0, n: 0, c: 0, last: 0 };
+        if (cur.score < 50) {
+          skills[k] = { ...cur, score: 50, last: Date.now() };
+          changed = true;
+        }
+      }
+      if (changed || !certified[u]) {
+        certified[u] = Date.now();
+        done.push(u);
+      }
+    }
+    return { ...d, skills, rw: { ...rw, certified } };
+  });
+  for (const u of done) apply({}, u);
+  return done;
 }
 
 /** 시험 제출 후 */

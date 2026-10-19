@@ -8,27 +8,39 @@ import type { Level, Problem } from '../core/types';
 import { dueWrong, recordAnswer, skillScore, startLevel, unitMastery } from '../lib/mastery';
 import { navigate } from '../lib/router';
 import { choiceRatio, getState, useStore } from '../lib/store';
-import { rewardAnswer, todayQuests, questText, levelInfo, rwOf } from '../lib/reward';
+import { HINT_XP, rewardAnswer, todayQuests, questText, levelInfo, rwOf } from '../lib/reward';
 import { unitAttempted } from '../lib/mastery';
 import { Header, Ring, UnitLink } from '../ui/bits';
 import { AnswerInput, Feedback, ProblemBody } from '../ui/ProblemView';
 import { MathText } from '../ui/MathText';
 import { NotFound } from './UnitPage';
+import { hintSteps } from '../lib/hints';
+import { skillCat, CAT_NAME, type Cat } from '../content/meta';
+import { isLocked, LockedCard } from '../ui/Lock';
+import { ScratchButton, Scratchpad } from '../ui/Scratchpad';
+import { SpeakButton } from '../ui/Speak';
 
 export type PracticeMode =
-  | { kind: 'unit'; unitId: string; skillId?: string }
+  | { kind: 'unit'; unitId: string; skillId?: string; cat?: Cat }
   | { kind: 'review' }
   | { kind: 'retry'; key: string }
   | { kind: 'similar'; key: string };
 
 const N = 10;
 
+interface Cur {
+  p: Problem;
+  reviewOf?: string;
+  /** 쌍둥이 문제 차수 (1, 2) */
+  twin?: number;
+}
+
 interface Plan {
   title: string;
   back: string;
   total: number;
   /** i번째 문제 만들기 (level: 현재 적응 레벨) */
-  next: (i: number, level: Level, prevSkill?: string) => { p: Problem; reviewOf?: string } | null;
+  next: (i: number, level: Level, prevSkill?: string) => Cur | null;
   startLevel: Level;
   unitId?: string;
   adaptive: boolean;
@@ -42,9 +54,11 @@ function buildPlan(mode: PracticeMode): Plan | null {
     if (!c || !u) return null;
     const sk = mode.skillId ? c.skills.find((s) => s.id === mode.skillId) : undefined;
     if (mode.skillId && !sk) return null;
+    const pool = mode.cat ? c.skills.filter((x) => skillCat(u.id, x.id) === mode.cat) : c.skills;
+    if (!pool.length) return null;
     const base = sk ? skillScore(d, u.id, sk.id) : unitMastery(d, u.id) ?? 0;
     return {
-      title: sk ? sk.title : `${u.title} 연습`,
+      title: sk ? sk.title : mode.cat ? `${u.title} · ${CAT_NAME[mode.cat]}` : `${u.title} 연습`,
       back: `/unit/${u.id}`,
       total: N,
       startLevel: startLevel(base),
@@ -55,8 +69,8 @@ function buildPlan(mode: PracticeMode): Plan | null {
         if (!skillId) {
           const dd = getState().data;
           // 약한 유형 위주, 직전 유형은 피함
-          const ranked = c.skills
-            .filter((s) => s.id !== prev || c.skills.length === 1)
+          const ranked = pool
+            .filter((s) => s.id !== prev || pool.length === 1)
             .map((s) => ({ id: s.id, w: skillScore(dd, u.id, s.id) + Math.random() * 45 }))
             .sort((a, b) => a.w - b.w);
           skillId = ranked[0].id;
@@ -87,14 +101,14 @@ function buildPlan(mode: PracticeMode): Plan | null {
     return { title: '다시 풀기', back: '/wrong', total: 1, startLevel: orig.level, adaptive: false, next: () => ({ p: orig, reviewOf: orig.key }) };
   }
   return {
-    title: '비슷한 문제',
+    title: '쌍둥이 문제',
     back: '/wrong',
     total: 3,
     startLevel: orig.level,
     adaptive: false,
     next: () => {
       const seed = randomSeed();
-      return { p: makeProblem(orig.unitId, orig.skillId, orig.level, seed, pickChoice(seed, choiceRatio(), orig.unitId)), reviewOf: orig.key };
+      return { p: makeProblem(orig.unitId, orig.skillId, orig.level, seed, orig.key.endsWith('/c')), reviewOf: orig.key, twin: 1 };
     },
   };
 }
@@ -102,6 +116,7 @@ function buildPlan(mode: PracticeMode): Plan | null {
 interface Done {
   p: Problem;
   ok: boolean;
+  twin?: boolean;
 }
 
 export function PracticePage({ mode }: { mode: PracticeMode }) {
@@ -112,14 +127,17 @@ export function PracticePage({ mode }: { mode: PracticeMode }) {
   const [idx, setIdx] = useState(0);
   const [level, setLevel] = useState<Level>(plan?.startLevel ?? 1);
   const [run, setRun] = useState(0); // 연속 정답
-  const [cur, setCur] = useState<{ p: Problem; reviewOf?: string } | null>(() => plan?.next(0, plan.startLevel) ?? null);
+  const [cur, setCur] = useState<Cur | null>(() => plan?.next(0, plan.startLevel) ?? null);
   const [ans, setAns] = useState<UserAnswer | undefined>(undefined);
   const [verdict, setVerdict] = useState<Verdict | null>(null);
-  const [hint, setHint] = useState(false);
+  const [hintLv, setHintLv] = useState(0);
+  const [scratch, setScratch] = useState(false);
   const [done, setDone] = useState<Done[]>([]);
+  const settings = useStore((s) => s.settings);
   const [finished, setFinished] = useState(false);
   const [combo, setCombo] = useState(0);
-  const [gain, setGain] = useState(0); // 이번 문제 XP
+  const [gain, setGain] = useState(0); // 이번 문제 XP (보너스 포함)
+  const [baseGain, setBaseGain] = useState(0);
   const [sessionXp, setSessionXp] = useState(0);
   const startXp = useRef(rwOf(getState().data).xp);
   const nextBtn = useRef<HTMLButtonElement>(null);
@@ -139,19 +157,29 @@ export function PracticePage({ mode }: { mode: PracticeMode }) {
     return <NotFound />;
   }
 
+  if (plan.unitId && mode.kind === 'unit' && isLocked(d, plan.unitId, settings)) {
+    return (
+      <div className="page">
+        <Header title={plan.title} back={plan.back} />
+        <LockedCard unitId={plan.unitId} />
+      </div>
+    );
+  }
+
   const grade = () => {
     if (!cur || verdict) return;
     if (ans === undefined || ans === '' || (Array.isArray(ans) && ans.every((x) => !x))) return;
     const v = judge(cur.p.answer, ans);
     setVerdict(v);
     const newUnit = !unitAttempted(getState().data, cur.p.unitId);
-    recordAnswer(cur.p, v.ok, cur.reviewOf);
+    recordAnswer(cur.p, v.ok, cur.reviewOf, !!cur.twin);
     const c = v.ok ? combo + 1 : 0;
     setCombo(c);
-    const x = rewardAnswer(cur.p, v.ok, { combo: c, review: !!cur.reviewOf, newUnit });
+    const x = rewardAnswer(cur.p, v.ok, { combo: c, review: !!cur.reviewOf && !cur.twin, newUnit, hints: hintLv, twin: !!cur.twin });
     setGain(x);
+    setBaseGain(v.ok ? Math.round([10, 15, 20][cur.p.level - 1] * HINT_XP[Math.min(3, hintLv)]) : 2);
     setSessionXp((t) => t + x);
-    setDone((x) => [...x, { p: cur.p, ok: v.ok }]);
+    setDone((x) => [...x, { p: cur.p, ok: v.ok, twin: !!cur.twin }]);
     if (plan.adaptive) {
       if (v.ok) {
         const r = run + 1;
@@ -166,6 +194,19 @@ export function PracticePage({ mode }: { mode: PracticeMode }) {
     }
   };
 
+  const resetQ = () => {
+    setAns(undefined);
+    setVerdict(null);
+    setHintLv(0);
+  };
+  /** 틀렸으면 쌍둥이 문제(같은 유형·같은 난이도, 숫자만 다름) — 최대 2번 */
+  const canTwin = !!verdict && !verdict.ok && (cur?.twin ?? 0) < 2;
+  const goTwin = () => {
+    if (!cur) return;
+    const p = cur.p;
+    setCur({ p: makeProblem(p.unitId, p.skillId, p.level, randomSeed(), p.key.endsWith('/c')), reviewOf: cur.reviewOf ?? p.key, twin: (cur.twin ?? 0) + 1 });
+    resetQ();
+  };
   const next = () => {
     if (idx + 1 >= plan.total) {
       setFinished(true);
@@ -174,9 +215,7 @@ export function PracticePage({ mode }: { mode: PracticeMode }) {
     const n = plan.next(idx + 1, level, cur?.p.skillId);
     setIdx(idx + 1);
     setCur(n);
-    setAns(undefined);
-    setVerdict(null);
-    setHint(false);
+    resetQ();
   };
 
   if (finished || !cur) {
@@ -237,6 +276,7 @@ export function PracticePage({ mode }: { mode: PracticeMode }) {
             {done.map((x, i) => (
               <div key={i} className={'doneitem ' + (x.ok ? 'ok' : 'no')}>
                 <span className="mark">{x.ok ? '○' : '✕'}</span>
+                {x.twin && <span className="twin-tag">쌍둥이</span>}
                 <MathText className="dq" text={x.p.q.split('\n')[0]} />
               </div>
             ))}
@@ -262,6 +302,7 @@ export function PracticePage({ mode }: { mode: PracticeMode }) {
   return (
     <div className="page practice">
       <Header title={plan.title} back={plan.back}>
+        <ScratchButton on={scratch} onToggle={() => setScratch(!scratch)} />
         {combo >= 2 && (
           <span className="combo" key={combo}>
             🔥 {combo}연속
@@ -282,17 +323,32 @@ export function PracticePage({ mode }: { mode: PracticeMode }) {
           <span className="muted small">
             {COURSE_BY_ID[u.course].title} {u.title} · {skill?.title}
           </span>
+          <SpeakButton p={p} />
         </div>
+        {cur.twin && (
+          <div className="twin-banner">
+            🩹 <b>쌍둥이 문제 {cur.twin > 1 ? cur.twin : ''}</b> 숫자만 바뀐 같은 유형이에요. 맞히면 오답 극복 +30 XP!
+          </div>
+        )}
         <ProblemBody p={p} />
-        <AnswerInput p={p} value={ans} onChange={setAns} locked={!!verdict} onEnter={verdict ? next : grade} />
-        {!verdict && hint && p.hint && (
-          <div className="hint">
-            💡 <MathText as="span" text={p.hint} />
+        <AnswerInput p={p} value={ans} onChange={setAns} locked={!!verdict} onEnter={verdict ? (canTwin ? goTwin : next) : grade} />
+        {!verdict && hintLv > 0 && (
+          <div className="hints">
+            {hintSteps(p)
+              .slice(0, hintLv)
+              .map((h, k) => (
+                <div key={k} className="hint">
+                  <span className="hint-n">힌트 {k + 1}</span>
+                  <MathText text={h} />
+                </div>
+              ))}
           </div>
         )}
         {verdict && (
           <div className="xp-row">
-            <span className={'xp-pill' + (verdict.ok ? '' : ' dim')}>+{gain} XP</span>
+            <span className={'xp-pill' + (verdict.ok ? '' : ' dim')}>+{baseGain} XP</span>
+            {gain > baseGain && <span className="xp-pill">보너스 +{gain - baseGain}</span>}
+            {verdict.ok && hintLv > 0 && <span className="muted small">힌트 {hintLv}개 사용</span>}
             {verdict.ok && combo > 0 && combo % 5 === 0 && <span className="muted small">{combo}연속 보너스!</span>}
             {!verdict.ok && <span className="muted small">틀려도 도전한 만큼 XP를 받아요</span>}
           </div>
@@ -301,9 +357,9 @@ export function PracticePage({ mode }: { mode: PracticeMode }) {
         <div className="btnrow">
           {!verdict ? (
             <>
-              {p.hint && !hint && (
-                <button className="btn ghost" onClick={() => setHint(true)}>
-                  힌트
+              {hintLv < hintSteps(p).length && (
+                <button className="btn ghost" onClick={() => setHintLv(hintLv + 1)} title="힌트를 볼수록 정답 XP 가 조금 줄어요">
+                  💡 힌트 {hintLv + 1}/{hintSteps(p).length}
                 </button>
               )}
               <button className="btn primary grow" onClick={grade}>
@@ -311,12 +367,24 @@ export function PracticePage({ mode }: { mode: PracticeMode }) {
               </button>
             </>
           ) : (
-            <button ref={nextBtn} className="btn primary grow" onClick={next}>
-              {idx + 1 >= plan.total ? '결과 보기' : '다음 문제'}
-            </button>
+            canTwin ? (
+              <>
+                <button className="btn ghost" onClick={next}>
+                  건너뛰기
+                </button>
+                <button ref={nextBtn} className="btn primary grow" onClick={goTwin}>
+                  🩹 쌍둥이 문제로 극복하기
+                </button>
+              </>
+            ) : (
+              <button ref={nextBtn} className="btn primary grow" onClick={next}>
+                {idx + 1 >= plan.total ? '결과 보기' : '다음 문제'}
+              </button>
+            )
           )}
         </div>
       </section>
+      {scratch && <Scratchpad resetKey={p.key} onClose={() => setScratch(false)} />}
     </div>
   );
 }

@@ -8,9 +8,13 @@ import { Bar, Header, Ring, Stars, StrandTag, UnitLink } from '../ui/bits';
 import { starsFor } from '../lib/reward';
 import { MathText } from '../ui/MathText';
 import type { Concept } from '../core/types';
+import { CAT_NAME, pitfalls, skillCat, unitCats, type Cat } from '../content/meta';
+import { isLocked, LockedCard } from '../ui/Lock';
+import { TutorChat } from '../ui/TutorChat';
 
 export function UnitPage({ id }: { id: string }) {
   const d = useStore((s) => s.data);
+  const settings = useStore((s) => s.settings);
   const u = UNIT_BY_ID[id];
   if (!u) return <NotFound />;
   const c = CONTENT[id];
@@ -34,9 +38,10 @@ export function UnitPage({ id }: { id: string }) {
           </div>
         </div>
         {c && <div className="muted small starhelp">숙련도 50 → ★, 80 → ★★, 95 → ★★★ · 심화 문제를 맞혀야 별 세 개를 받을 수 있어요</div>}
+        {c && isLocked(d, id, settings) && <div className="lock-note">🔒 잠김 · 먼저 배울 단원을 마치면 연습할 수 있어요 (시험은 볼 수 있어요)</div>}
         {c && (
           <div className="btnrow">
-            <button className="btn primary" onClick={() => navigate(`/practice/u/${id}`)}>
+            <button className="btn primary" disabled={isLocked(d, id, settings)} onClick={() => navigate(`/practice/u/${id}`)}>
               단원 전체 연습
             </button>
             <button className="btn" onClick={() => navigate(`/exam/new/unit/${id}`)}>
@@ -86,6 +91,30 @@ export function UnitPage({ id }: { id: string }) {
               ))}
             </div>
           </section>
+          {pitfalls(id).length > 0 && (
+            <section className="card pitfalls">
+              <div className="card-h">⚠️ 흔한 실수</div>
+              <ul>
+                {pitfalls(id).map((t, i) => (
+                  <li key={i}>
+                    <MathText as="span" text={t} />
+                  </li>
+                ))}
+              </ul>
+            </section>
+          )}
+          {isLocked(d, id, settings) && <LockedCard unitId={id} />}
+          <section className="card">
+            <div className="card-h">골라 풀기</div>
+            <div className="catrow">
+              {(Object.entries(unitCats(id)) as [Cat, string[]][]).map(([cat, ids]) => (
+                <button key={cat} className={'catbtn cat-' + cat} disabled={!ids.length || isLocked(d, id, settings)} onClick={() => navigate(`/practice/c/${id}/${cat}`)}>
+                  <b>{CAT_NAME[cat]}</b>
+                  <span>{ids.length ? `${ids.length}유형` : '없음'}</span>
+                </button>
+              ))}
+            </div>
+          </section>
           <section className="card">
             <div className="card-h">문제 유형</div>
             <div className="skills">
@@ -94,11 +123,13 @@ export function UnitPage({ id }: { id: string }) {
                 return (
                   <div key={sk.id} className="skill">
                     <div className="sk-info">
-                      <div className="sk-t">{sk.title}</div>
+                      <div className="sk-t">
+                        {sk.title} <span className={'cattag cat-' + skillCat(id, sk.id)}>{CAT_NAME[skillCat(id, sk.id)]}</span>
+                      </div>
                       <Bar value={sc} />
                     </div>
                     <span className="sk-sc">{sc}</span>
-                    <button className="btn small" onClick={() => navigate(`/practice/u/${id}/${sk.id}`)}>
+                    <button className="btn small" disabled={isLocked(d, id, settings)} onClick={() => navigate(`/practice/u/${id}/${sk.id}`)}>
                       연습
                     </button>
                   </div>
@@ -106,6 +137,7 @@ export function UnitPage({ id }: { id: string }) {
               })}
             </div>
           </section>
+          <TutorChat unitId={id} />
         </>
       )}
     </div>

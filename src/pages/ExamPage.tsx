@@ -5,7 +5,8 @@ import { hasContent } from '../core/problem';
 import { makeEssays } from '../lib/ai';
 import { buildExam, diagUnits, examProblem, examTitle, gradeExam, MIX, type ExamState, type Mix } from '../lib/exam';
 import { recordAnswer, unitMastery } from '../lib/mastery';
-import { rewardExam } from '../lib/reward';
+import { certifyUnits, rewardExam } from '../lib/reward';
+import { ScratchButton, Scratchpad } from '../ui/Scratchpad';
 import { navigate } from '../lib/router';
 import { activeProfile, getState, readProfileKey, updateData, useStore, writeProfileKey, type ExamKind, type ExamRecord } from '../lib/store';
 import { Bar, Header, UnitLink } from '../ui/bits';
@@ -270,6 +271,7 @@ function ExamHistory() {
 
 // ───────────────────────── 시험 보기 ─────────────────────────
 export function ExamRun() {
+  const [scratch, setScratch] = useState(false);
   const [ex, setEx] = useState<ExamState | null>(() => readProfileKey<ExamState>('exam'));
   const [i, setI] = useState(0);
   const [now, setNow] = useState(Date.now());
@@ -324,6 +326,13 @@ export function ExamRun() {
       items: ex.items.map((it, k) => ({ key: it.key, asChoice: it.asChoice, answer: ex.answers[k] ?? null, ok: res.per[k]?.ok ?? false, points: res.per[k]?.points ?? 0 })),
       essays: ex.essays,
     };
+    if (ex.kind === 'diag') {
+      // 진단에서 맞힌 단원은 별 1개(숙련도 50)로 인증 → 다시 처음부터 반복하지 않아도 됨
+      const okUnits = Object.entries(res.units)
+        .filter(([, v]) => v.c === v.n)
+        .map(([u]) => u);
+      rec.certified = certifyUnits(okUnits);
+    }
     updateData((d) => ({ ...d, exams: [rec, ...d.exams.filter((e) => e.id !== rec.id)].slice(0, 60) }));
     rewardExam(rec.score, res.per.map((x) => x.problem.unitId));
     writeProfileKey('exam', null);
@@ -344,6 +353,7 @@ export function ExamRun() {
   return (
     <div className="page exam">
       <Header title={ex.title} back={() => navigate('/exam')}>
+        <ScratchButton on={scratch} onToggle={() => setScratch(!scratch)} />
         {ex.timeLimitMin > 0 && <span className={'timer' + (remain < 300000 ? ' low' : '')}>{`${mm}:${String(ss).padStart(2, '0')}`}</span>}
       </Header>
       <div className="qnav">
@@ -420,6 +430,7 @@ export function ExamRun() {
           </div>
         </div>
       )}
+      {scratch && <Scratchpad resetKey={String(i)} onClose={() => setScratch(false)} />}
     </div>
   );
 }
@@ -475,6 +486,17 @@ export function ExamResult({ id }: { id: string }) {
           ))}
         </div>
       </section>
+      {rec.certified && rec.certified.length > 0 && (
+        <section className="card goodbox">
+          <div className="card-h">🎓 인증된 단원 {rec.certified.length}개</div>
+          <div className="muted small">진단에서 맞힌 단원은 별 1개(숙련도 50)로 인증했어요. 처음부터 반복하지 않고 다음 단계로 바로 갈 수 있어요.</div>
+          <div className="links">
+            {rec.certified.map((u) => (
+              <UnitLink key={u} u={UNIT_BY_ID[u]} mastery={unitMastery(d, u)} />
+            ))}
+          </div>
+        </section>
+      )}
       {weak.length > 0 && (
         <section className="card warnbox">
           <div className="card-h">{rec.kind === 'diag' ? '다시 다져야 할 기초 단원' : '더 연습할 단원'}</div>

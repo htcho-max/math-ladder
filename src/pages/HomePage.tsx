@@ -1,4 +1,5 @@
-import { COURSE_BY_ID, STRANDS, unitLabel } from '../core/curriculum';
+import { COURSE_BY_ID, STRANDS, UNIT_BY_ID, unitLabel } from '../core/curriculum';
+import { isLocked, missingPrereqs } from '../ui/Lock';
 import { dueWrong, recommend, unitMastery, courseMastery } from '../lib/mastery';
 import { BADGES, levelInfo, questText, rwOf, streakDays, todayQuests, courseStars } from '../lib/reward';
 import { navigate } from '../lib/router';
@@ -10,7 +11,14 @@ export function HomePage() {
   const prof = activeProfile(s);
   const d = s.data;
   const course = COURSE_BY_ID[prof.course];
-  const rec = recommend(d, prof.course);
+  const rec0 = recommend(d, prof.course);
+  // 잠금 모드면 잠긴 단원 대신 아직 못 마친 선수 단원을 먼저
+  let rec = rec0;
+  if (rec0 && isLocked(d, rec0.unit.id, s.settings)) {
+    let u = rec0.unit;
+    for (let i = 0; i < 30 && isLocked(d, u.id, s.settings); i++) u = UNIT_BY_ID[missingPrereqs(d, u.id)[0]];
+    rec = { unit: u, reason: 'prereq', target: rec0.unit };
+  }
   const due = dueWrong(d).length;
   const st = streakDays(d);
   const rw = rwOf(d);
@@ -93,6 +101,15 @@ export function HomePage() {
         <div className="card-h">이어서 학습</div>
         {rec ? (
           <>
+            {s.settings.lockMode && rec.reason === 'prereq' && rec.unit.course !== prof.course && (
+              <div className="tip">
+                🔒 잠금 모드예요. 이미 아는 이전 학년 단원은{' '}
+                <button className="link" onClick={() => navigate('/exam')}>
+                  수준 진단
+                </button>
+                으로 한 번에 인증하면 바로 내 학년 단원으로 갈 수 있어요.
+              </div>
+            )}
             {rec.reason === 'prereq' && rec.target && (
               <div className="tip">
                 <b>{rec.target.title}</b> 을(를) 하기 전에, 기초가 되는 단원을 먼저 다져요.

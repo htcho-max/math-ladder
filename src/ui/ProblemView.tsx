@@ -5,6 +5,7 @@ import { explainProblem } from '../lib/ai';
 import { getState, activeProfile, useStore } from '../lib/store';
 import { COURSE_BY_ID } from '../core/curriculum';
 import { Fig, MathText, Table } from './MathText';
+import { pitfalls } from '../content/meta';
 
 const CIRCLED = '①②③④⑤⑥⑦⑧';
 
@@ -144,6 +145,18 @@ export function Feedback({ p, verdict, mine, showAi = true }: { p: Problem; verd
         </div>
       )}
       <Steps steps={p.steps} />
+      {!verdict.ok && pitfalls(p.unitId).length > 0 && (
+        <details className="fb-pit">
+          <summary>⚠️ 이 단원에서 자주 하는 실수</summary>
+          <ul>
+            {pitfalls(p.unitId).map((t, i) => (
+              <li key={i}>
+                <MathText as="span" text={t} />
+              </li>
+            ))}
+          </ul>
+        </details>
+      )}
       {showAi && <AiHelp p={p} mine={userAnswerText(p, mine)} />}
     </div>
   );

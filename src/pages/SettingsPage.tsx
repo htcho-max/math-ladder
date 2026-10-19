@@ -123,7 +123,7 @@ export function SettingsPage() {
       </section>
 
       <section className="card form">
-        <div className="card-h">목표와 보상</div>
+        <div className="card-h">학습 방식</div>
         <div className="frow">
           <span>하루 목표</span>
           <div className="seg">
@@ -145,6 +145,32 @@ export function SettingsPage() {
             </button>
           </div>
         </div>
+        <div className="frow">
+          <span>선수 단원 잠금</span>
+          <div className="seg">
+            <button className={s.settings.lockMode ? 'on' : ''} onClick={() => updateSettings({ lockMode: true })}>
+              켜기
+            </button>
+            <button className={!s.settings.lockMode ? 'on' : ''} onClick={() => updateSettings({ lockMode: false })}>
+              끄기
+            </button>
+          </div>
+        </div>
+        <div className="frow">
+          <span>문제 읽어 주기</span>
+          <div className="seg">
+            {([
+              ['auto', '초등 1~4'],
+              ['on', '항상'],
+              ['off', '끄기'],
+            ] as const).map(([k, label]) => (
+              <button key={k} className={(s.settings.tts ?? 'auto') === k ? 'on' : ''} onClick={() => updateSettings({ tts: k })}>
+                {label}
+              </button>
+            ))}
+          </div>
+        </div>
+        <div className="muted small">선수 단원 잠금: 먼저 배울 단원에서 별 1개를 받아야 다음 단원 연습이 열려요(시험은 언제나 볼 수 있어요). 이미 아는 단원은 수준 진단으로 한 번에 인증할 수 있어요.</div>
         <div className="muted small">하루 목표는 지금 프로필에만 적용돼요. 축하 효과는 레벨 업·배지 때 색종이가 날려요.</div>
       </section>
 

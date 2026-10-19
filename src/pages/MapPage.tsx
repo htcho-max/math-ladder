@@ -8,6 +8,7 @@ import { activeProfile, useStore } from '../lib/store';
 import { Bar, Ring, Stars, StrandDot } from '../ui/bits';
 import { courseStars, starsFor } from '../lib/reward';
 import { Ladder } from '../ui/Ladder';
+import { isLocked } from '../ui/Lock';
 
 const STAGES = [
   { id: 'e', name: '초등' },
@@ -105,6 +106,7 @@ export function MapPage() {
                           <span className="ut-s">{ok ? u.summary : '문제 준비 중'}</span>
                         </span>
                         <span className="uterm">{u.term === 'mid' ? '중간' : '기말'}</span>
+                        {ok && isLocked(d, u.id, s.settings) && <span className="lockic" title="잠김: 먼저 배울 단원을 마치면 열려요">🔒</span>}
                         {ok && <Stars n={starsFor(unitMastery(d, u.id))} small />}
                         <Ring value={unitMastery(d, u.id)} size={34} />
                       </button>

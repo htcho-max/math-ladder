@@ -13,6 +13,7 @@ import { SettingsPage } from './pages/SettingsPage';
 import { BadgesPage } from './pages/BadgesPage';
 import { Toasts } from './ui/Celebrate';
 import { applyFreezes } from './lib/reward';
+import { OfflineBadge } from './ui/Offline';
 
 const TABS = [
   { path: '', name: '홈', ic: '🏠', match: ['', 'badges'] },
@@ -32,6 +33,7 @@ function Page({ r }: { r: string[] }) {
     case 'unit':
       return <UnitPage id={b} />;
     case 'practice':
+      if (b === 'c' && c && (d === 'calc' || d === 'concept' || d === 'word')) return <PracticePage mode={{ kind: 'unit', unitId: c, cat: d }} />;
       return b === 'u' && c ? <PracticePage mode={{ kind: 'unit', unitId: c, skillId: d }} /> : <NotFound />;
     case 'review':
       return <PracticePage mode={{ kind: 'review' }} />;
@@ -91,6 +93,7 @@ export function App() {
           ⚙️
         </button>
       </header>
+      <OfflineBadge />
       {storageError && <div className="storage-warn noprint">{storageError}</div>}
       <main>
         <Page key={raw} r={parts} />

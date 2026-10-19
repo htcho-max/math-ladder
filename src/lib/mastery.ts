@@ -60,7 +60,7 @@ function nextScore(s: SkillStat | undefined, ok: boolean, level: Level): SkillSt
 /**
  * 답 기록. reviewOf: 오답노트 복습이면 원래 문제 키 (다시 풀기는 자기 key, 비슷한 문제는 원래 key)
  */
-export function recordAnswer(p: Problem, ok: boolean, reviewOf?: string): void {
+export function recordAnswer(p: Problem, ok: boolean, reviewOf?: string, twin = false): void {
   updateData((d) => {
     const k = skillKey(p.unitId, p.skillId);
     const day = dayKey();
@@ -86,7 +86,7 @@ export function recordAnswer(p: Problem, ok: boolean, reviewOf?: string): void {
       } else if (existing.box >= 4) wrong[target] = { ...existing, graduated: true };
       else {
         const box = existing.box + 1;
-        wrong[target] = { ...existing, box, due: startOfDay(now) + BOX_DAYS[box] * DAY };
+        wrong[target] = { ...existing, box, due: startOfDay(now) + BOX_DAYS[box] * DAY, ...(twin ? { overcome: now } : {}) };
       }
     }
     return {

@@ -13,6 +13,10 @@ export interface Settings {
   geminiKey: string;
   geminiModel: string;
   theme: 'auto' | 'light' | 'dark';
+  /** 선수 단원 잠금 모드: 선수 단원 별 1개 이상이어야 연습 가능 */
+  lockMode?: boolean;
+  /** 문제 읽어 주기 버튼: auto(초등 1~4학년) / on / off */
+  tts?: 'auto' | 'on' | 'off';
   /** 축하 효과(색종이) */
   effects?: boolean;
   /** 문제 형식: 섞기(기본) / 주관식 위주 / 객관식 위주 */
@@ -42,6 +46,8 @@ export interface WrongItem {
   lastWrong: number;
   wrongCount: number;
   graduated?: boolean;
+  /** 쌍둥이 문제로 극복한 시각 */
+  overcome?: number;
 }
 
 export interface ExamItemRec {
@@ -64,6 +70,8 @@ export interface ExamRecord {
   units: Record<string, { n: number; c: number }>;
   items: ExamItemRec[];
   essays?: EssayItem[];
+  /** 수준 진단으로 인증된 단원 */
+  certified?: string[];
 }
 
 export type ExamKind = 'unit' | 'mid' | 'final' | 'custom' | 'diag';
@@ -98,6 +106,10 @@ export interface RewardData {
   stars: Record<string, number>;
   streakRewarded: number;
   rootStar?: boolean;
+  /** 쌍둥이 문제로 오답 극복한 횟수 */
+  overcome?: number;
+  /** 진단 평가로 인증된 단원 */
+  certified?: Record<string, number>;
 }
 
 export interface ProfileData {
@@ -117,7 +129,7 @@ export interface State {
 }
 
 const emptyData = (): ProfileData => ({ skills: {}, days: {}, wrong: {}, exams: [] });
-const defaultSettings: Settings = { geminiKey: '', geminiModel: 'gemini-2.5-flash-lite', theme: 'auto', choiceMode: 'mix', effects: true };
+const defaultSettings: Settings = { geminiKey: '', geminiModel: 'gemini-2.5-flash-lite', theme: 'auto', choiceMode: 'mix', effects: true, lockMode: false, tts: 'auto' };
 
 function read<T>(k: string): T | null {
   try {

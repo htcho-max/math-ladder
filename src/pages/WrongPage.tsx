@@ -73,7 +73,7 @@ function WrongRow({ w, now }: { w: WrongItem; now: number }) {
       {p ? <MathText className="wr-q" text={p.q} /> : <div className="muted">문제를 다시 만들 수 없어요 (유형이 바뀜).</div>}
       <div className="wr-foot">
         <span className="small muted">
-          {w.graduated ? '졸업 🎓' : days <= 0 ? '오늘 복습' : `${days}일 뒤 복습`} · 틀린 횟수 {w.wrongCount}
+          {w.overcome && <span className="twin-tag">극복 🦸</span>} {w.graduated ? '졸업 🎓' : days <= 0 ? '오늘 복습' : `${days}일 뒤 복습`} · 틀린 횟수 {w.wrongCount}
         </span>
         <span className="btnrow tight">
           {p && (
@@ -82,7 +82,7 @@ function WrongRow({ w, now }: { w: WrongItem; now: number }) {
                 다시 풀기
               </button>
               <button className="btn small" onClick={() => navigate(`/similar/${enc(w.key)}`)}>
-                비슷한 문제
+                쌍둥이 문제
               </button>
             </>
           )}

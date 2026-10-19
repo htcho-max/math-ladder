@@ -4,13 +4,19 @@ import { COURSE_BY_ID } from '../core/curriculum';
 import type { Problem } from '../core/types';
 import type { EssayItem } from './store';
 
-async function call(key: string, model: string, text: string, json = false): Promise<string> {
+export interface ChatMsg {
+  role: 'user' | 'model';
+  text: string;
+}
+
+async function call(key: string, model: string, text: string | ChatMsg[], json = false, system?: string): Promise<string> {
   const url = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent?key=${encodeURIComponent(key)}`;
   const res = await fetch(url, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      contents: [{ role: 'user', parts: [{ text }] }],
+      contents: typeof text === 'string' ? [{ role: 'user', parts: [{ text }] }] : text.map((m) => ({ role: m.role, parts: [{ text: m.text }] })),
+      ...(system ? { systemInstruction: { parts: [{ text: system }] } } : {}),
       generationConfig: { temperature: json ? 0.7 : 0.4, ...(json ? { responseMimeType: 'application/json' } : {}) },
     }),
   });
@@ -60,4 +66,15 @@ JSON 배열로만 답해: [{"q":"문제","answer":"모범 답안(풀이 과정 �
   const arr = JSON.parse(out.replace(/^```json\s*|```$/g, ''));
   if (!Array.isArray(arr)) throw new Error('AI 응답 형식 오류');
   return arr.slice(0, 2).map((e: { q?: string; answer?: string; rubric?: string }) => ({ q: String(e.q ?? ''), answer: String(e.answer ?? ''), rubric: String(e.rubric ?? '') }));
+}
+
+/** 단원 개념 튜터 대화 */
+export async function tutorChat(key: string, model: string, unit: { title: string; course: string; summary: string; concepts: string }, gradeLabel: string, history: ChatMsg[]): Promise<string> {
+  const system = `너는 친절한 한국 수학 선생님(개념 튜터)이야. 학생 학년: ${gradeLabel}.
+지금 단원: ${unit.course} 「${unit.title}」 — ${unit.summary}
+단원 개념 요약:
+${unit.concepts}
+규칙: 학생 눈높이의 쉬운 말로, 짧게(3~8문장) 답해. 수식은 반드시 $...$ 또는 $$...$$ 안에 LaTeX 로. 마크다운 제목(#) 금지, **굵게** 와 '- ' 목록만.
+숙제 답만 원하면 바로 답을 주지 말고 생각할 질문이나 첫 단계를 먼저 줘(소크라테스식). 수학과 관계없는 질문이면 공부 이야기로 부드럽게 돌려.`;
+  return call(key, model, history, false, system);
 }

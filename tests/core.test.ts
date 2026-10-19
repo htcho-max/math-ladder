@@ -89,3 +89,54 @@ describe('보상', () => {
     expect(new Set(BADGES.map((b) => b.id)).size).toBe(BADGES.length);
   });
 });
+
+import { hintSteps } from '../src/lib/hints';
+import { texToSpeech } from '../src/ui/Speak';
+import { answerText as at2 } from '../src/core/check';
+describe('힌트·읽어 주기', () => {
+  it('3단계 힌트는 정답 줄(마지막 풀이)을 보여 주지 않음', () => {
+    for (const [u, s] of [['m1a-1', 'gcd-lcm'], ['e3a-3', 'div-fact'], ['cal1-6', 'definite']] as const) {
+      for (let seed = 1; seed < 20; seed++) {
+        const p = makeProblem(u, CONTENT[u].skills.find((x) => x.id === s)?.id ?? CONTENT[u].skills[0].id, 2, seed);
+        const hs = hintSteps(p);
+        expect(hs.length).toBeGreaterThanOrEqual(1);
+        expect(hs.length).toBeLessThanOrEqual(3);
+        if (p.steps.length > 1) expect(hs.join('\n')).not.toContain(p.steps[p.steps.length - 1]);
+        void at2;
+      }
+    }
+  });
+  it('수식 읽기', () => {
+    expect(texToSpeech('45+17=\\square')).toBe('45 더하기 17 는 네모');
+    expect(texToSpeech('2\\frac{1}{3}')).toBe('2와 3분의 1');
+    expect(texToSpeech('-5-(-3)')).toBe('마이너스 5 빼기 ( 마이너스 3)');
+  });
+});
+
+import { certifyUnits, rewardAnswer, rwOf, unitStars } from '../src/lib/reward';
+import { getState } from '../src/lib/store';
+describe('인증·쌍둥이 (메모리 저장소)', () => {
+  it('진단 인증 → 별 1개', () => {
+    const done = certifyUnits(['e1a-1', 'e1a-3']);
+    expect(done.sort()).toEqual(['e1a-1', 'e1a-3']);
+    const d = getState().data;
+    expect(unitStars(d, 'e1a-1')).toBe(1);
+    expect(Object.keys(rwOf(d).certified ?? {})).toContain('e1a-3');
+    expect(rwOf(d).badges.certified).toBeTruthy();
+  });
+  it('쌍둥이 정답 → 극복 +30', () => {
+    const before = rwOf(getState().data);
+    const p = makeProblem('m1a-1', 'factorize', 1, 5);
+    const x = rewardAnswer(p, true, { combo: 1, review: false, newUnit: false, twin: true });
+    const after = rwOf(getState().data);
+    expect(after.overcome).toBe((before.overcome ?? 0) + 1);
+    expect(x).toBeGreaterThanOrEqual(40);
+    expect(after.badges.clinic1).toBeTruthy();
+  });
+  it('힌트 쓰면 정답 XP 감소', () => {
+    const p = makeProblem('m1a-1', 'factorize', 3, 6);
+    const a = rewardAnswer(p, true, { combo: 0, review: false, newUnit: false, hints: 0 });
+    const b = rewardAnswer(p, true, { combo: 0, review: false, newUnit: false, hints: 3 });
+    expect(b).toBeLessThan(a);
+  });
+});
