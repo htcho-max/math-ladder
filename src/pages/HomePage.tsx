@@ -48,7 +48,10 @@ export function HomePage() {
             {course?.grade} · {course?.title} <span aria-hidden="true">›</span>
           </button>
         </div>
-        <Mascot mood={today.n >= rw.goal ? 'cheer' : today.n > 0 ? 'happy' : st > 0 ? 'happy' : 'think'} size={104} className="hb-mascot" />
+        <button className="hb-mascot-btn" onClick={() => navigate('/closet')} aria-label="셈이 꾸미기">
+          <Mascot mood={today.n >= rw.goal ? 'cheer' : today.n > 0 ? 'happy' : st > 0 ? 'happy' : 'think'} size={112} className="hb-mascot" />
+          <span className="hb-dress">꾸미기</span>
+        </button>
         <svg className="hb-deco" viewBox="0 0 200 120" preserveAspectRatio="xMaxYMid slice" aria-hidden="true">
           <text x="118" y="30">+</text>
           <text x="186" y="44">÷</text>

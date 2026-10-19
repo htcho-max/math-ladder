@@ -140,3 +140,29 @@ describe('인증·쌍둥이 (메모리 저장소)', () => {
     expect(b).toBeLessThan(a);
   });
 });
+
+import { ITEMS, isUnlocked, itemsAtLevel } from '../src/lib/closet';
+import { BADGE_BY_ID } from '../src/lib/reward';
+describe('꾸미기', () => {
+  it('아이템 id 는 칸마다 유일하고, 배지 조건은 실제 배지', () => {
+    const keys = ITEMS.map((i) => `${i.slot}/${i.id}`);
+    expect(new Set(keys).size).toBe(keys.length);
+    for (const i of ITEMS) if (i.badge) expect(BADGE_BY_ID[i.badge], i.id).toBeTruthy();
+  });
+  it('레벨 해금', () => {
+    const d = { skills: {}, days: {}, wrong: {}, exams: [], rw: { xp: 0, freezes: 0, frozen: {}, badges: {}, goal: 20, goalDays: {}, questDays: {}, maxCombo: 0, hardCorrect: 0, stars: {}, streakRewarded: 0 } };
+    const crown = ITEMS.find((i) => i.id === 'crown')!;
+    expect(isUnlocked(crown, d)).toBe(false);
+    expect(isUnlocked(ITEMS.find((i) => i.id === 'pencil')!, d)).toBe(true);
+    expect(itemsAtLevel(10).map((i) => i.id)).toContain('crown');
+  });
+});
+
+import { wear, outfitOf } from '../src/lib/closet';
+describe('꾸미기 입기', () => {
+  it('입은 아이템이 저장됨', () => {
+    wear('hat', 'ribbon');
+    wear('color', 'sky');
+    expect(outfitOf(getState().data)).toMatchObject({ hat: 'ribbon', color: 'sky' });
+  });
+});

@@ -3,6 +3,7 @@ import { useEffect, useRef, useSyncExternalStore } from 'react';
 import { UNIT_BY_ID, COURSE_BY_ID } from '../core/curriculum';
 import { BADGE_BY_ID, eventQueue, popEvent, subscribeEvents, type RewardEvent } from '../lib/reward';
 import { getState } from '../lib/store';
+import { itemsAtLevel, ITEMS } from '../lib/closet';
 import { navigate } from '../lib/router';
 
 const COLORS = ['#3b82f6', '#8b5cf6', '#ec4899', '#10b981', '#f59e0b', '#ef4444'];
@@ -61,10 +62,14 @@ export function confetti(power = 1): void {
 function describe(e: RewardEvent): { ic: string; title: string; sub?: string; big?: boolean; go?: string } {
   switch (e.kind) {
     case 'level':
-      return { ic: e.icon, title: `레벨 ${e.level} 달성!`, sub: `칭호: ${e.title}`, big: true };
+      {
+        const items = itemsAtLevel(e.level);
+        return { ic: e.icon, title: `레벨 ${e.level} 달성!`, sub: items.length ? `새 꾸미기: ${items.map((i) => i.name).join(', ')}` : `칭호: ${e.title}`, big: true, go: items.length ? '/closet' : undefined };
+      }
     case 'badge': {
       const b = BADGE_BY_ID[e.badge];
-      return { ic: b.ic, title: `배지 획득: ${b.name}`, sub: b.desc, big: true, go: '/badges' };
+      const gift = ITEMS.filter((i) => i.badge === b.id);
+      return { ic: b.ic, title: `배지 획득: ${b.name}`, sub: gift.length ? `꾸미기 선물: ${gift.map((i) => i.name).join(', ')}` : b.desc, big: true, go: gift.length ? '/closet' : '/badges' };
     }
     case 'quest':
       return { ic: '✅', title: '퀘스트 완료 +30 XP', sub: e.text };

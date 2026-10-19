@@ -1,6 +1,7 @@
 import { BADGES, levelInfo, rwOf, TITLES } from '../lib/reward';
 import { useStore } from '../lib/store';
 import { Header } from '../ui/bits';
+import { navigate } from '../lib/router';
 
 export function BadgesPage() {
   const d = useStore((s) => s.data);
@@ -10,7 +11,11 @@ export function BadgesPage() {
   const got = BADGES.filter((b) => rw.badges[b.id]).length;
   return (
     <div className="page">
-      <Header title="배지와 칭호" back="/" />
+      <Header title="배지와 칭호" back="/">
+        <button className="btn small" onClick={() => navigate('/closet')}>
+          셈이 꾸미기
+        </button>
+      </Header>
       <section className="card">
         <div className="card-h">
           칭호 <span className="muted small">레벨이 오르면 바뀌어요</span>

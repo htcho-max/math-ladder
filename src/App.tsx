@@ -11,6 +11,7 @@ import { ExamPrint, ExamResult, ExamRun, ExamSetup } from './pages/ExamPage';
 import { StatsPage } from './pages/StatsPage';
 import { SettingsPage } from './pages/SettingsPage';
 import { BadgesPage } from './pages/BadgesPage';
+import { ClosetPage } from './pages/ClosetPage';
 import { Toasts } from './ui/Celebrate';
 import { applyFreezes } from './lib/reward';
 import { OfflineBadge } from './ui/Offline';
@@ -19,7 +20,7 @@ import { COURSE_BY_ID } from './core/curriculum';
 import { activeProfile } from './lib/store';
 
 const TABS = [
-  { path: '', name: '홈', ic: 'home', match: ['', 'badges'] },
+  { path: '', name: '홈', ic: 'home', match: ['', 'badges', 'closet'] },
   { path: 'map', name: '학습 지도', ic: 'map', match: ['map', 'unit', 'practice'] },
   { path: 'exam', name: '시험', ic: 'exam', match: ['exam'] },
   { path: 'wrong', name: '오답노트', ic: 'note', match: ['wrong', 'review', 'retry', 'similar'] },
@@ -58,6 +59,8 @@ function Page({ r }: { r: string[] }) {
       return <SettingsPage />;
     case 'badges':
       return <BadgesPage />;
+    case 'closet':
+      return <ClosetPage />;
     default:
       return <NotFound />;
   }
