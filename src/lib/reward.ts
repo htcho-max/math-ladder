@@ -82,7 +82,8 @@ export type RewardEvent =
   | { kind: 'goal'; goal: number }
   | { kind: 'freeze-used'; days: number }
   | { kind: 'freeze-got' }
-  | { kind: 'streak'; days: number };
+  | { kind: 'streak'; days: number }
+  | { kind: 'daily'; count: number };
 
 let queue: (RewardEvent & { id: number })[] = [];
 let seq = 0;
@@ -187,6 +188,9 @@ export const BADGES: BadgeDef[] = [
   { id: 'streak7', ic: '🗓️', name: '일주일 연속', desc: '7일 연속 학습', group: '꾸준함', test: (c) => c.streak >= 7 },
   { id: 'streak30', ic: '🏅', name: '한 달 연속', desc: '30일 연속 학습', group: '꾸준함', test: (c) => c.streak >= 30 },
   { id: 'streak100', ic: '💯', name: '백일 연속', desc: '100일 연속 학습', group: '꾸준함', test: (c) => c.streak >= 100 },
+  { id: 'daily1', ic: '📗', name: '오늘의 학습 첫 완료', desc: '오늘의 학습을 처음 끝내기', group: '꾸준함', test: (c) => Object.keys(c.rw.dailyDone ?? {}).length >= 1 },
+  { id: 'daily7', ic: '📚', name: '오늘의 학습 7일', desc: '오늘의 학습 7번 끝내기', group: '꾸준함', test: (c) => Object.keys(c.rw.dailyDone ?? {}).length >= 7 },
+  { id: 'daily30', ic: '🏛️', name: '오늘의 학습 30일', desc: '오늘의 학습 30번 끝내기', group: '꾸준함', test: (c) => Object.keys(c.rw.dailyDone ?? {}).length >= 30 },
   { id: 'goal7', ic: '🎯', name: '목표 달인', desc: '하루 목표 7번 달성', group: '꾸준함', test: (c) => Object.keys(c.rw.goalDays).length >= 7 },
   { id: 'quests7', ic: '✅', name: '퀘스트 마스터', desc: '오늘의 퀘스트 모두 완료 7번', group: '꾸준함', test: (c) => Object.keys(c.rw.questDays).length >= 7 },
   { id: 'star1', ic: '⭐', name: '첫 별', desc: '단원 별 처음 얻기', group: '별과 단원', test: (c) => c.starUnits[0] >= 1 },
@@ -259,6 +263,7 @@ interface Gain {
   newUnit?: boolean;
   exam?: boolean;
   twin?: boolean;
+  daily?: boolean;
 }
 
 /** 보상 처리 공통: 데이터 갱신 + 이벤트 */
@@ -276,6 +281,11 @@ function apply(g: Gain, starUnitId?: string): number {
       if (g.combo > 0 && g.combo % 5 === 0) xp += 10; // 5연속마다 보너스
     }
     if (g.hard) rw.hardCorrect++;
+    if (g.daily && !rw.dailyDone?.[dayKey()]) {
+      rw.dailyDone = { ...(rw.dailyDone ?? {}), [dayKey()]: true };
+      xp += 100;
+      push({ kind: 'daily', count: Object.keys(rw.dailyDone).length });
+    }
     if (g.twin) {
       rw.overcome = (rw.overcome ?? 0) + 1;
       xp += 30;
@@ -431,4 +441,9 @@ export function applyFreezes(): void {
 
 export function setGoal(goal: number): void {
   updateData((d) => ({ ...d, rw: { ...rwOf(d), goal } }));
+}
+
+/** 오늘의 학습을 끝냈을 때 (+100 XP, 도장) */
+export function rewardDaily(): number {
+  return apply({ daily: true });
 }

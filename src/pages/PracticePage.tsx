@@ -8,24 +8,29 @@ import type { Level, Problem } from '../core/types';
 import { dueWrong, recordAnswer, skillScore, startLevel, unitMastery } from '../lib/mastery';
 import { navigate } from '../lib/router';
 import { choiceRatio, getState, useStore } from '../lib/store';
-import { HINT_XP, rewardAnswer, todayQuests, questText, levelInfo, rwOf } from '../lib/reward';
+import { HINT_XP, rewardDaily, rewardAnswer, todayQuests, questText, levelInfo, rwOf } from '../lib/reward';
 import { unitAttempted } from '../lib/mastery';
 import { Header, Ring, UnitLink } from '../ui/bits';
 import { AnswerInput, Feedback, ProblemBody } from '../ui/ProblemView';
 import { MathText } from '../ui/MathText';
 import { NotFound } from './UnitPage';
 import { hintSteps } from '../lib/hints';
+import { dailySkillPick, saveDaily, todayDaily } from '../lib/daily';
 import { skillCat, CAT_NAME, type Cat } from '../content/meta';
 import { isLocked, LockedCard } from '../ui/Lock';
 import { ScratchButton, Scratchpad } from '../ui/Scratchpad';
 import { SpeakButton } from '../ui/Speak';
 import { Mascot } from '../ui/Mascot';
+import { DailyCalendar } from '../ui/DailyCalendar';
+import { recommend } from '../lib/mastery';
+import { activeProfile } from '../lib/store';
 
 export type PracticeMode =
   | { kind: 'unit'; unitId: string; skillId?: string; cat?: Cat }
   | { kind: 'review' }
   | { kind: 'retry'; key: string }
-  | { kind: 'similar'; key: string };
+  | { kind: 'similar'; key: string }
+  | { kind: 'daily' };
 
 const N = 10;
 
@@ -45,10 +50,61 @@ interface Plan {
   startLevel: Level;
   unitId?: string;
   adaptive: boolean;
+  /** 이어 풀기 시작 위치 (오늘의 학습) */
+  startIndex?: number;
+  /** 채점할 때마다 (쌍둥이 문제 제외) */
+  onGraded?: (i: number, ok: boolean) => void;
+  onFinish?: () => void;
+  daily?: boolean;
 }
 
 function buildPlan(mode: PracticeMode): Plan | null {
   const d = getState().data;
+  if (mode.kind === 'daily') {
+    const dp = todayDaily();
+    if (!dp || dp.done || dp.idx >= dp.items.length) return null;
+    const firstNew = dp.items.find((x) => x.kind === 'new');
+    return {
+      title: '오늘의 학습',
+      back: '/',
+      total: dp.items.length,
+      startIndex: dp.idx,
+      startLevel: firstNew ? startLevel(unitMastery(d, firstNew.unitId) ?? 0) : 2,
+      adaptive: true,
+      daily: true,
+      next(i, level, prev) {
+        const it = dp.items[i];
+        if (!it) return null;
+        const dd = getState().data;
+        const seed = randomSeed();
+        if (it.kind === 'review') {
+          const p = problemFromKey(it.key);
+          if (p) return { p, reviewOf: it.key };
+          // 유형이 바뀌어 다시 못 만들면 같은 단원 새 문제로
+          return { p: makeProblem(it.unitId, dailySkillPick(dd, it.unitId), 2, seed) };
+        }
+        if (it.kind === 'weak') {
+          if (!CONTENT[it.unitId]?.skills.some((x) => x.id === it.skillId)) return { p: makeProblem(it.unitId, dailySkillPick(dd, it.unitId), 2, seed) };
+          const lv = startLevel(skillScore(dd, it.unitId, it.skillId));
+          return { p: makeProblem(it.unitId, it.skillId, lv, seed, pickChoice(seed, choiceRatio(), it.unitId)) };
+        }
+        const sk = dailySkillPick(dd, it.unitId, prev);
+        return { p: makeProblem(it.unitId, sk, level, seed, pickChoice(seed, choiceRatio(), it.unitId)) };
+      },
+      onGraded(i, ok) {
+        const cur = todayDaily(false);
+        if (!cur) return;
+        saveDaily({ ...cur, idx: Math.max(cur.idx, i + 1), correct: cur.correct + (ok ? 1 : 0) });
+      },
+      onFinish() {
+        const cur = todayDaily(false);
+        if (cur && !cur.done) {
+          saveDaily({ ...cur, done: true });
+          rewardDaily();
+        }
+      },
+    };
+  }
   if (mode.kind === 'unit') {
     const c = CONTENT[mode.unitId];
     const u = UNIT_BY_ID[mode.unitId];
@@ -125,10 +181,10 @@ export function PracticePage({ mode }: { mode: PracticeMode }) {
   const plan = useMemo(() => buildPlan(mode), [modeKey]); // eslint-disable-line react-hooks/exhaustive-deps
   const d = useStore((s) => s.data);
   const startMastery = useRef<number | null>(plan?.unitId ? unitMastery(getState().data, plan.unitId) : null);
-  const [idx, setIdx] = useState(0);
+  const [idx, setIdx] = useState(plan?.startIndex ?? 0);
   const [level, setLevel] = useState<Level>(plan?.startLevel ?? 1);
   const [run, setRun] = useState(0); // 연속 정답
-  const [cur, setCur] = useState<Cur | null>(() => plan?.next(0, plan.startLevel) ?? null);
+  const [cur, setCur] = useState<Cur | null>(() => plan?.next(plan.startIndex ?? 0, plan.startLevel) ?? null);
   const [ans, setAns] = useState<UserAnswer | undefined>(undefined);
   const [verdict, setVerdict] = useState<Verdict | null>(null);
   const [hintLv, setHintLv] = useState(0);
@@ -148,6 +204,7 @@ export function PracticePage({ mode }: { mode: PracticeMode }) {
   }, [verdict]);
 
   if (!plan) {
+    if (mode.kind === 'daily') return <DailyDone />;
     if (mode.kind === 'review')
       return (
         <div className="page">
@@ -184,6 +241,7 @@ export function PracticePage({ mode }: { mode: PracticeMode }) {
     setBaseGain(v.ok ? Math.round([10, 15, 20][cur.p.level - 1] * HINT_XP[Math.min(3, hintLv)]) : 2);
     setSessionXp((t) => t + x);
     setDone((x) => [...x, { p: cur.p, ok: v.ok, twin: !!cur.twin }]);
+    if (!cur.twin) plan.onGraded?.(idx, v.ok);
     if (plan.adaptive) {
       if (v.ok) {
         const r = run + 1;
@@ -213,6 +271,7 @@ export function PracticePage({ mode }: { mode: PracticeMode }) {
   };
   const next = () => {
     if (idx + 1 >= plan.total) {
+      plan.onFinish?.();
       setFinished(true);
       return;
     }
@@ -230,6 +289,18 @@ export function PracticePage({ mode }: { mode: PracticeMode }) {
     return (
       <div className="page">
         <Header title={plan.title} back={plan.back} />
+        {plan.daily && (
+          <section className="card daily-stamp">
+            <div className="stamp">
+              <span>참</span>
+              <span>잘했어요</span>
+            </div>
+            <div>
+              <div className="card-h">오늘의 학습 완료! +100 XP</div>
+              <div className="muted small">내일도 와서 도장을 모아 봐요. 달력에 오늘이 표시됐어요.</div>
+            </div>
+          </section>
+        )}
         <section className="card result-card">
           <Mascot mood={rate >= 0.7 ? 'cheer' : rate >= 0.5 ? 'happy' : 'think'} size={88} className="res-mascot" />
           <div className="big">{Math.round(rate * 100)}%</div>
@@ -390,6 +461,32 @@ export function PracticePage({ mode }: { mode: PracticeMode }) {
         </div>
       </section>
       {scratch && <Scratchpad resetKey={p.key} onClose={() => setScratch(false)} />}
+    </div>
+  );
+}
+
+function DailyDone() {
+  const d = useStore((s) => s.data);
+  const rec = recommend(d, activeProfile().course);
+  return (
+    <div className="page">
+      <Header title="오늘의 학습" back="/" />
+      <section className="card empty">
+        <Mascot mood="cheer" size={100} />
+        <div className="card-h">오늘의 학습을 이미 끝냈어요! 🎉</div>
+        <div className="muted small">더 하고 싶으면 아래에서 자유롭게 연습해요. 내일 새 묶음이 준비돼요.</div>
+        <div className="btnrow">
+          {rec && (
+            <button className="btn primary" onClick={() => navigate(`/practice/u/${rec.unit.id}`)}>
+              {rec.unit.title} 더 풀기
+            </button>
+          )}
+          <button className="btn" onClick={() => navigate('/')}>
+            홈으로
+          </button>
+        </div>
+      </section>
+      <DailyCalendar />
     </div>
   );
 }

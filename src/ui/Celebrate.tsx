@@ -85,6 +85,8 @@ function describe(e: RewardEvent): { ic: string; title: string; sub?: string; bi
       return { ic: '🧊', title: '얼음이 연속 기록을 지켰어요', sub: `쉬었던 ${e.days}일을 얼음으로 메웠어요` };
     case 'freeze-got':
       return { ic: '🧊', title: '얼음 1개 획득', sub: '하루 쉬어도 연속 기록이 이어져요' };
+    case 'daily':
+      return { ic: '📗', title: '오늘의 학습 완료! +100 XP', sub: `지금까지 ${e.count}일 해냈어요`, big: true };
     case 'streak':
       return { ic: '🔥', title: `${e.days}일 연속 학습!`, big: true };
   }

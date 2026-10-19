@@ -1,3 +1,4 @@
+import { DailyCalendar } from '../ui/DailyCalendar';
 import { COURSES, STRANDS, UNITS } from '../core/curriculum';
 import type { Strand } from '../core/types';
 import { courseMastery, unitMastery } from '../lib/mastery';
@@ -25,6 +26,7 @@ export function StatsPage() {
   return (
     <div className="page">
       <Header title="기록" />
+      <DailyCalendar />
       <div className="grid3">
         <div className="card statbox">
           <b>{totalN}</b>

@@ -110,6 +110,8 @@ export interface RewardData {
   rootStar?: boolean;
   /** 쌍둥이 문제로 오답 극복한 횟수 */
   overcome?: number;
+  /** 오늘의 학습 완료한 날 */
+  dailyDone?: Record<string, true>;
   /** 셈이 꾸미기 (closet.ts Outfit) */
   outfit?: { color?: string; hat?: string; face?: string; hand?: string; fx?: string };
   /** 진단 평가로 인증된 단원 */

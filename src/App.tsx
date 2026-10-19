@@ -20,7 +20,7 @@ import { COURSE_BY_ID } from './core/curriculum';
 import { activeProfile } from './lib/store';
 
 const TABS = [
-  { path: '', name: '홈', ic: 'home', match: ['', 'badges', 'closet'] },
+  { path: '', name: '홈', ic: 'home', match: ['', 'badges', 'closet', 'daily'] },
   { path: 'map', name: '학습 지도', ic: 'map', match: ['map', 'unit', 'practice'] },
   { path: 'exam', name: '시험', ic: 'exam', match: ['exam'] },
   { path: 'wrong', name: '오답노트', ic: 'note', match: ['wrong', 'review', 'retry', 'similar'] },
@@ -41,6 +41,8 @@ function Page({ r }: { r: string[] }) {
       return b === 'u' && c ? <PracticePage mode={{ kind: 'unit', unitId: c, skillId: d }} /> : <NotFound />;
     case 'review':
       return <PracticePage mode={{ kind: 'review' }} />;
+    case 'daily':
+      return <PracticePage mode={{ kind: 'daily' }} />;
     case 'retry':
       return <PracticePage mode={{ kind: 'retry', key: b }} />;
     case 'similar':

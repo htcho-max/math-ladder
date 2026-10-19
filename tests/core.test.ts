@@ -166,3 +166,32 @@ describe('꾸미기 입기', () => {
     expect(outfitOf(getState().data)).toMatchObject({ hat: 'ribbon', color: 'sky' });
   });
 });
+
+import { buildDaily } from '../src/lib/daily';
+describe('오늘의 학습 묶음', () => {
+  const base = { skills: {}, days: {}, wrong: {}, exams: [] } as import('../src/lib/store').ProfileData;
+  it('처음이면 하루 목표만큼 추천 단원 새 문제', () => {
+    const p = buildDaily(base, '2026-10-19');
+    expect(p.items.length).toBe(20);
+    expect(p.items.every((x) => x.kind === 'new')).toBe(true);
+  });
+  it('오답 복습이 앞에, 약한 유형이 섞여 총 목표 수', () => {
+    const now = Date.now();
+    const d = {
+      ...base,
+      skills: { ['e1a-2/' + CONTENT['e1a-2'].skills[0].id]: { score: 30, n: 5, c: 2, last: now - 864e5 } },
+      wrong: Object.fromEntries(
+        [1, 2, 3].map((i) => {
+          const key = `e1a-3/${CONTENT['e1a-3'].skills[0].id}/1/${i}`;
+          return [key, { key, unitId: 'e1a-3', skillId: CONTENT['e1a-3'].skills[0].id, box: 0, due: now - 1000, added: now, lastWrong: now, wrongCount: 1 }];
+        }),
+      ),
+      rw: { xp: 0, freezes: 0, frozen: {}, badges: {}, goal: 10, goalDays: {}, questDays: {}, maxCombo: 0, hardCorrect: 0, stars: {}, streakRewarded: 0 },
+    } as import('../src/lib/store').ProfileData;
+    const p = buildDaily(d, '2026-10-19');
+    expect(p.items.length).toBe(10);
+    expect(p.items.slice(0, 3).every((x) => x.kind === 'review')).toBe(true);
+    expect(p.items.some((x) => x.kind === 'weak')).toBe(true);
+    expect(p.items.some((x) => x.kind === 'new')).toBe(true);
+  });
+});

@@ -6,6 +6,8 @@ import { navigate } from '../lib/router';
 import { activeProfile, dayKey, useStore } from '../lib/store';
 import { Bar, Ring } from '../ui/bits';
 import { Mascot } from '../ui/Mascot';
+import { WeekStrip } from '../ui/DailyCalendar';
+import { dailyStatus } from '../lib/daily';
 import { Icon } from '../ui/Icon';
 
 export function HomePage() {
@@ -29,6 +31,7 @@ export function HomePage() {
   const myBadges = BADGES.filter((b) => rw.badges[b.id]).sort((a, b) => rw.badges[b.id] - rw.badges[a.id]);
   const cs = courseStars(d, prof.course);
   const today = d.days[dayKey()] ?? { n: 0, c: 0 };
+  const ds = dailyStatus(d);
   const cheer =
     today.n >= rw.goal
       ? '오늘 목표 달성! 정말 멋져요 🎉'
@@ -58,6 +61,32 @@ export function HomePage() {
           <text x="104" y="112">π</text>
           <text x="190" y="112">×</text>
         </svg>
+      </section>
+
+      <section className={'card daily-card' + (ds.done ? ' done' : '')}>
+        <div className="dc-top">
+          <div className="dc-ring" aria-label={`오늘의 학습 ${ds.idx}/${ds.total}`}>
+            <svg viewBox="0 0 64 64" width="64" height="64">
+              <circle cx="32" cy="32" r="27" className="ring-bg" />
+              <circle cx="32" cy="32" r="27" className="ring-fg dc-fg" strokeDasharray={`${(2 * Math.PI * 27 * (ds.done ? 1 : ds.idx / ds.total))} 999`} transform="rotate(-90 32 32)" />
+            </svg>
+            <span className="dc-num">{ds.done ? '✓' : `${ds.idx}/${ds.total}`}</span>
+          </div>
+          <div className="dc-text">
+            <div className="dc-title">오늘의 학습</div>
+            <div className="muted small">
+              {ds.done
+                ? '오늘 분량을 다 했어요! 내일 또 만나요.'
+                : ds.idx > 0
+                  ? `${ds.total - ds.idx}문제 남았어요. 이어서 풀어요!`
+                  : `오답 복습 → 새 단원 → 약한 유형까지 ${ds.total}문제, 끝내면 +100 XP`}
+            </div>
+          </div>
+        </div>
+        <WeekStrip />
+        <button className="btn primary dc-btn" onClick={() => navigate('/daily')}>
+          {ds.done ? '완료! 달력 보기' : ds.idx > 0 ? '이어서 하기' : '오늘의 학습 시작'}
+        </button>
       </section>
 
       <section className="card lvcard">
