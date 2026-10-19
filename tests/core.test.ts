@@ -195,3 +195,31 @@ describe('오늘의 학습 묶음', () => {
     expect(p.items.some((x) => x.kind === 'new')).toBe(true);
   });
 });
+
+import { checkPin, checkRecovery, hasPin, isUnlocked as pinOpen, lockNow, removePin, setPin, makeRec, matches } from '../src/lib/pin';
+describe('부모 PIN', () => {
+  it('소금 해시: 같은 PIN 도 해시가 다르고, 맞는 PIN 만 통과', async () => {
+    const a = await makeRec('1234');
+    const b = await makeRec('1234');
+    expect(a.hash).not.toBe(b.hash);
+    expect(a.hash).not.toContain('1234');
+    expect(await matches(a, '1234')).toBe(true);
+    expect(await matches(a, '1235')).toBe(false);
+  });
+  it('설정·잠금·풀기·복구', async () => {
+    removePin();
+    expect(pinOpen()).toBe(true);
+    await setPin('2580', { q: '병원?', a: '서울 대학 병원' });
+    expect(hasPin()).toBe(true);
+    lockNow();
+    expect(pinOpen()).toBe(false);
+    expect(await checkPin('0000')).toBe(false);
+    expect(pinOpen()).toBe(false);
+    expect(await checkPin('2580')).toBe(true);
+    expect(pinOpen()).toBe(true);
+    expect(await checkRecovery('서울대학병원')).toBe(true);
+    expect(await checkRecovery('부산')).toBe(false);
+    removePin();
+    expect(hasPin()).toBe(false);
+  });
+});

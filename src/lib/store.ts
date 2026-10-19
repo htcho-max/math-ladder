@@ -13,6 +13,10 @@ export interface Settings {
   geminiKey: string;
   geminiModel: string;
   theme: 'auto' | 'light' | 'dark';
+  /** 부모 PIN (해시) */
+  parentPin?: { salt: string; hash: string };
+  /** PIN 을 잊었을 때 확인 질문 (답은 해시) */
+  pinRecovery?: { q: string; salt: string; hash: string };
   /** 화면 테마: 학년에 맞게(auto) / 초등 / 중등 / 고등 */
   look?: 'auto' | 'e' | 'm' | 'h';
   /** 선수 단원 잠금 모드: 선수 단원 별 1개 이상이어야 연습 가능 */

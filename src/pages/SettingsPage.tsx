@@ -14,6 +14,9 @@ import {
   useStore,
 } from '../lib/store';
 import { Header } from '../ui/bits';
+import { navigate } from '../lib/router';
+import { todayDaily, buildDaily, saveDaily } from '../lib/daily';
+import { getState, dayKey as dk } from '../lib/store';
 
 function CourseSelect({ value, onChange }: { value: string; onChange: (v: string) => void }) {
   return (
@@ -31,7 +34,7 @@ function CourseSelect({ value, onChange }: { value: string; onChange: (v: string
   );
 }
 
-export function SettingsPage() {
+export function SettingsPage({ parent = false }: { parent?: boolean }) {
   const s = useStore((x) => x);
   const prof = activeProfile(s);
   const [newName, setNewName] = useState('');
@@ -39,6 +42,13 @@ export function SettingsPage() {
   const [showKey, setShowKey] = useState(false);
   const [msg, setMsg] = useState('');
   const file = useRef<HTMLInputElement>(null);
+
+  /** 하루 목표 바꾸기: 오늘 묶음을 아직 시작 안 했으면 새 목표로 다시 만듦 */
+  const changeGoal = (g: number) => {
+    setGoal(g);
+    const cur = todayDaily(false);
+    if (cur && cur.idx === 0 && !cur.done) saveDaily(buildDaily(getState().data, dk()));
+  };
 
   const download = () => {
     const blob = new Blob([exportBackup()], { type: 'application/json' });
@@ -52,7 +62,8 @@ export function SettingsPage() {
 
   return (
     <div className="page">
-      <Header title="설정" back="/" />
+      {!parent && <Header title="설정" back="/" />}
+      {parent && (
       <section className="card form">
         <div className="card-h">내 프로필</div>
         <label className="frow">
@@ -65,7 +76,9 @@ export function SettingsPage() {
         </label>
         <div className="muted small">학년은 홈의 '이어서 학습' 추천과 시험 기본 범위에 쓰여요.</div>
       </section>
+      )}
 
+      {parent && (
       <section className="card form">
         <div className="card-h">프로필 ({s.profiles.length})</div>
         {s.profiles.map((p) => (
@@ -103,7 +116,9 @@ export function SettingsPage() {
           </button>
         </div>
       </section>
+      )}
 
+      {parent && (
       <section className="card form">
         <div className="card-h">AI 선생님 (선택)</div>
         <div className="muted small">Google Gemini API 키를 넣으면 문제마다 'AI 선생님에게 묻기'와 시험의 AI 서술형 문항을 쓸 수 있어요. 키는 이 기기에만 저장돼요.</div>
@@ -121,29 +136,34 @@ export function SettingsPage() {
           <input type="text" value={s.settings.geminiModel} onChange={(e) => updateSettings({ geminiModel: e.target.value.trim() || 'gemini-2.5-flash-lite' })} />
         </label>
       </section>
+      )}
 
+      {parent && (
       <section className="card form">
         <div className="card-h">학습 방식</div>
         <div className="frow">
           <span>하루 목표</span>
           <div className="seg">
-            {[10, 20, 30, 50].map((g) => (
-              <button key={g} className={rwOf(s.data).goal === g ? 'on' : ''} onClick={() => setGoal(g)}>
-                {g}문제
+            {[10, 15, 20, 30, 50].map((g) => (
+              <button key={g} className={rwOf(s.data).goal === g ? 'on' : ''} onClick={() => changeGoal(g)}>
+                {g}
               </button>
             ))}
           </div>
-        </div>
-        <div className="frow">
-          <span>축하 효과</span>
-          <div className="seg">
-            <button className={s.settings.effects !== false ? 'on' : ''} onClick={() => updateSettings({ effects: true })}>
-              켜기
-            </button>
-            <button className={s.settings.effects === false ? 'on' : ''} onClick={() => updateSettings({ effects: false })}>
-              끄기
-            </button>
-          </div>
+          <input
+            id="goal-custom"
+            className="goal-num"
+            type="number"
+            min={5}
+            max={100}
+            value={rwOf(s.data).goal}
+            onChange={(e) => {
+              const v = Math.max(5, Math.min(100, Math.round(Number(e.target.value) || 0)));
+              if (v) changeGoal(v);
+            }}
+            aria-label="하루 목표 문제 수"
+          />
+          <span className="muted small">문제</span>
         </div>
         <div className="frow">
           <span>선수 단원 잠금</span>
@@ -156,24 +176,12 @@ export function SettingsPage() {
             </button>
           </div>
         </div>
-        <div className="frow">
-          <span>문제 읽어 주기</span>
-          <div className="seg">
-            {([
-              ['auto', '초등 1~4'],
-              ['on', '항상'],
-              ['off', '끄기'],
-            ] as const).map(([k, label]) => (
-              <button key={k} className={(s.settings.tts ?? 'auto') === k ? 'on' : ''} onClick={() => updateSettings({ tts: k })}>
-                {label}
-              </button>
-            ))}
-          </div>
-        </div>
         <div className="muted small">선수 단원 잠금: 먼저 배울 단원에서 별 1개를 받아야 다음 단원 연습이 열려요(시험은 언제나 볼 수 있어요). 이미 아는 단원은 수준 진단으로 한 번에 인증할 수 있어요.</div>
-        <div className="muted small">하루 목표는 지금 프로필에만 적용돼요. 축하 효과는 레벨 업·배지 때 색종이가 날려요.</div>
+        <div className="muted small">하루 목표(= 오늘의 학습 문제 수)는 지금 프로필에만 적용돼요. 바꾸면 내일 묶음부터 적용되고, 오늘 아직 시작하지 않았다면 오늘 묶음도 바뀌어요.</div>
       </section>
+      )}
 
+      {parent && (
       <section className="card form">
         <div className="card-h">문제 형식</div>
         <div className="frow">
@@ -192,6 +200,7 @@ export function SettingsPage() {
         </div>
         <div className="muted small">섞어서: 주관식과 객관식이 반반쯤 나와요. 시험(단원평가·중간·기말)은 실제 학교 시험처럼 객관식이 더 많이 나와요.</div>
       </section>
+      )}
 
       <section className="card form">
         <div className="card-h">화면</div>
@@ -220,8 +229,34 @@ export function SettingsPage() {
             ))}
           </div>
         </div>
+        <div className="frow">
+          <span>축하 효과</span>
+          <div className="seg">
+            <button className={s.settings.effects !== false ? 'on' : ''} onClick={() => updateSettings({ effects: true })}>
+              켜기
+            </button>
+            <button className={s.settings.effects === false ? 'on' : ''} onClick={() => updateSettings({ effects: false })}>
+              끄기
+            </button>
+          </div>
+        </div>
+        <div className="frow">
+          <span>문제 읽어 주기</span>
+          <div className="seg">
+            {([
+              ['auto', '초등 1~4'],
+              ['on', '항상'],
+              ['off', '끄기'],
+            ] as const).map(([k, label]) => (
+              <button key={k} className={(s.settings.tts ?? 'auto') === k ? 'on' : ''} onClick={() => updateSettings({ tts: k })}>
+                {label}
+              </button>
+            ))}
+          </div>
+        </div>
       </section>
 
+      {parent && (
       <section className="card form">
         <div className="card-h">백업</div>
         <div className="muted small">기록은 이 기기의 브라우저에 저장돼요. 기기를 바꾸거나 브라우저 기록을 지우기 전에 백업해 두세요.</div>
@@ -257,6 +292,16 @@ export function SettingsPage() {
           </button>
         </div>
       </section>
+      )}
+      {!parent && (
+        <section className="card parent-entry">
+          <div className="card-h">🔒 부모 메뉴</div>
+          <div className="muted small">오늘의 학습 분량, 학년·프로필, 문제 형식, 잠금 모드, AI 키, 백업과 학습 리포트는 부모 메뉴에서 바꿀 수 있어요.</div>
+          <button className="btn primary" onClick={() => navigate('/parent')}>
+            부모 메뉴 열기
+          </button>
+        </section>
+      )}
       <div className="muted small center">수학 사다리 v{__APP_VERSION__} · 2022 개정 교육과정 기준</div>
     </div>
   );

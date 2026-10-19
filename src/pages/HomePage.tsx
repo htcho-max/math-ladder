@@ -47,7 +47,7 @@ export function HomePage() {
         <div className="hb-text">
           <div className="hello">안녕, {prof.name}!</div>
           <div className="hb-msg">{cheer}</div>
-          <button className="hb-chip" onClick={() => navigate('/settings')}>
+          <button className="hb-chip" onClick={() => navigate('/parent')}>
             {course?.grade} · {course?.title} <span aria-hidden="true">›</span>
           </button>
         </div>

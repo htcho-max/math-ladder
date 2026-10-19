@@ -12,6 +12,7 @@ import { StatsPage } from './pages/StatsPage';
 import { SettingsPage } from './pages/SettingsPage';
 import { BadgesPage } from './pages/BadgesPage';
 import { ClosetPage } from './pages/ClosetPage';
+import { ParentPage } from './pages/ParentPage';
 import { Toasts } from './ui/Celebrate';
 import { applyFreezes } from './lib/reward';
 import { OfflineBadge } from './ui/Offline';
@@ -63,6 +64,8 @@ function Page({ r }: { r: string[] }) {
       return <BadgesPage />;
     case 'closet':
       return <ClosetPage />;
+    case 'parent':
+      return <ParentPage tab={b === 'settings' ? 'settings' : 'report'} />;
     default:
       return <NotFound />;
   }
