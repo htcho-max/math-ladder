@@ -56,7 +56,7 @@ export function AnswerInput({
           const cls = ['choice', sel ? 'sel' : '', locked && i === a.index ? 'right' : '', locked && sel && i !== a.index ? 'wrong' : ''].join(' ');
           return (
             <button key={i} className={cls} role="radio" aria-checked={sel} disabled={locked} onClick={() => onChange(i)}>
-              <span className="cnum">{CIRCLED[i]}</span>
+              <span className="cnum" aria-label={`${i + 1}번`}>{i + 1}</span>
               <MathText as="span" text={c.replace(/\\frac/g, '\\dfrac')} />
             </button>
           );

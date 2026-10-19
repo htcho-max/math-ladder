@@ -7,6 +7,7 @@ import { buildExam, diagUnits, examProblem, examTitle, gradeExam, MIX, type Exam
 import { recordAnswer, unitMastery } from '../lib/mastery';
 import { certifyUnits, rewardExam } from '../lib/reward';
 import { ScratchButton, Scratchpad } from '../ui/Scratchpad';
+import { Mascot } from '../ui/Mascot';
 import { navigate } from '../lib/router';
 import { activeProfile, getState, readProfileKey, updateData, useStore, writeProfileKey, type ExamKind, type ExamRecord } from '../lib/store';
 import { Bar, Header, UnitLink } from '../ui/bits';
@@ -459,6 +460,7 @@ export function ExamResult({ id }: { id: string }) {
         </button>
       </Header>
       <section className="card result-card">
+        <Mascot mood={rec.score >= 70 ? 'cheer' : rec.score >= 50 ? 'happy' : 'think'} size={88} className="res-mascot" />
         <div className="muted small">{rec.title}</div>
         <div className="big">
           {rec.score}

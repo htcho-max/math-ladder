@@ -19,6 +19,7 @@ import { skillCat, CAT_NAME, type Cat } from '../content/meta';
 import { isLocked, LockedCard } from '../ui/Lock';
 import { ScratchButton, Scratchpad } from '../ui/Scratchpad';
 import { SpeakButton } from '../ui/Speak';
+import { Mascot } from '../ui/Mascot';
 
 export type PracticeMode =
   | { kind: 'unit'; unitId: string; skillId?: string; cat?: Cat }
@@ -151,7 +152,10 @@ export function PracticePage({ mode }: { mode: PracticeMode }) {
       return (
         <div className="page">
           <Header title="오답 복습" back="/wrong" />
-          <div className="card muted">오늘 복습할 문제가 없어요. 잘했어요!</div>
+          <div className="card empty">
+            <Mascot mood="cheer" size={88} />
+            <div>오늘 복습할 문제가 없어요. 잘했어요!</div>
+          </div>
         </div>
       );
     return <NotFound />;
@@ -227,6 +231,7 @@ export function PracticePage({ mode }: { mode: PracticeMode }) {
       <div className="page">
         <Header title={plan.title} back={plan.back} />
         <section className="card result-card">
+          <Mascot mood={rate >= 0.7 ? 'cheer' : rate >= 0.5 ? 'happy' : 'think'} size={88} className="res-mascot" />
           <div className="big">{Math.round(rate * 100)}%</div>
           <div className="muted">
             {done.length}문제 중 {correct}문제 정답

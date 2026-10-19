@@ -4,6 +4,7 @@ import { COURSES } from '../core/curriculum';
 import { courseMastery } from '../lib/mastery';
 import { courseStars, levelInfo, rwOf } from '../lib/reward';
 import { activeProfile, useStore } from '../lib/store';
+import { Mascot } from './Mascot';
 
 const STAGE_NAME = { e: '초등학교', m: '중학교', h: '고등학교' } as const;
 
@@ -45,7 +46,8 @@ export function Ladder({ onPick }: { onPick: (courseId: string) => void }) {
                 </button>
                 {mine && (
                   <span className="climber" title={`Lv.${lv.level} ${lv.title}`}>
-                    🧗
+                    <Mascot size={38} mood="cheer" className="climber-m" />
+                    <span className="climber-h">나</span>
                   </span>
                 )}
               </div>

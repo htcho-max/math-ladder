@@ -18,6 +18,11 @@ export default defineConfig(({ mode }) => ({
               skipWaiting: true,
               clientsClaim: true,
               maximumFileSizeToCacheInBytes: 6 * 1024 * 1024,
+              // 글꼴: 한 번 받으면 오프라인에서도 쓰도록 캐시
+              runtimeCaching: [
+                { urlPattern: /^https:\/\/fonts\.googleapis\.com\//, handler: 'StaleWhileRevalidate', options: { cacheName: 'google-fonts-css' } },
+                { urlPattern: /^https:\/\/fonts\.gstatic\.com\//, handler: 'CacheFirst', options: { cacheName: 'google-fonts', expiration: { maxEntries: 300, maxAgeSeconds: 60 * 60 * 24 * 365 }, cacheableResponse: { statuses: [0, 200] } } },
+              ],
             },
             manifest: {
               name: '수학 사다리',

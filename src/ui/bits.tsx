@@ -1,6 +1,7 @@
 import { STRANDS, COURSE_BY_ID } from '../core/curriculum';
 import type { Strand, UnitDef } from '../core/types';
 import { navigate } from '../lib/router';
+import { Icon } from './Icon';
 
 export function Ring({ value, size = 40, label }: { value: number | null; size?: number; label?: boolean }) {
   const v = value ?? 0;
@@ -58,7 +59,7 @@ export function Header({ title, back, children }: { title: string; back?: string
     <div className="pagehead">
       {back && (
         <button className="iconbtn" aria-label="뒤로" onClick={() => (typeof back === 'string' ? navigate(back) : back())}>
-          ‹
+          <Icon name="back" size={22} stroke={2.4} />
         </button>
       )}
       <h1>{title}</h1>

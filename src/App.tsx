@@ -14,13 +14,16 @@ import { BadgesPage } from './pages/BadgesPage';
 import { Toasts } from './ui/Celebrate';
 import { applyFreezes } from './lib/reward';
 import { OfflineBadge } from './ui/Offline';
+import { Icon } from './ui/Icon';
+import { COURSE_BY_ID } from './core/curriculum';
+import { activeProfile } from './lib/store';
 
 const TABS = [
-  { path: '', name: '홈', ic: '🏠', match: ['', 'badges'] },
-  { path: 'map', name: '학습 지도', ic: '🗺️', match: ['map', 'unit', 'practice'] },
-  { path: 'exam', name: '시험', ic: '📝', match: ['exam'] },
-  { path: 'wrong', name: '오답노트', ic: '📒', match: ['wrong', 'review', 'retry', 'similar'] },
-  { path: 'stats', name: '기록', ic: '📈', match: ['stats'] },
+  { path: '', name: '홈', ic: 'home', match: ['', 'badges'] },
+  { path: 'map', name: '학습 지도', ic: 'map', match: ['map', 'unit', 'practice'] },
+  { path: 'exam', name: '시험', ic: 'exam', match: ['exam'] },
+  { path: 'wrong', name: '오답노트', ic: 'note', match: ['wrong', 'review', 'retry', 'similar'] },
+  { path: 'stats', name: '기록', ic: 'chart', match: ['stats'] },
 ];
 
 function Page({ r }: { r: string[] }) {
@@ -63,6 +66,14 @@ function Page({ r }: { r: string[] }) {
 export function App() {
   const { parts, raw } = useRoute();
   const theme = useStore((s) => s.settings.theme);
+  const look = useStore((s) => s.settings.look ?? 'auto');
+  const myStage = useStore((s) => COURSE_BY_ID[activeProfile(s).course]?.stage ?? 'e');
+  const stage = look === 'auto' ? myStage : look;
+  useEffect(() => {
+    document.documentElement.dataset.stage = stage;
+    const meta = document.querySelector('meta[name="theme-color"]');
+    if (meta) meta.setAttribute('content', stage === 'e' ? '#3d7bff' : stage === 'm' ? '#0f9d8a' : '#3949c7');
+  }, [stage]);
   const storageError = useStore((s) => s.storageError);
   const due = useStore((s) => dueWrong(s.data).length);
   useEffect(() => {
@@ -79,7 +90,10 @@ export function App() {
     <div className={'app' + (inExam ? ' focus' : '')}>
       <header className="topbar noprint">
         <button className="brand" onClick={() => navigate('/')}>
-          <span className="logo">∑</span> 수학 사다리
+          <span className="logo">
+            <Icon name="ladder" size={20} stroke={2.4} />
+          </span>
+          <span className="brand-t">수학 사다리</span>
         </button>
         <nav className="topnav">
           {TABS.map((t) => (
@@ -89,8 +103,8 @@ export function App() {
             </button>
           ))}
         </nav>
-        <button className="iconbtn" aria-label="설정" onClick={() => navigate('/settings')}>
-          ⚙️
+        <button className={'iconbtn' + (top === 'settings' ? ' on' : '')} aria-label="설정" onClick={() => navigate('/settings')}>
+          <Icon name="gear" />
         </button>
       </header>
       <OfflineBadge />
@@ -102,7 +116,9 @@ export function App() {
       <nav className="tabbar noprint">
         {TABS.map((t) => (
           <button key={t.path} className={t.match.includes(top) ? 'on' : ''} onClick={() => navigate('/' + t.path)}>
-            <span className="tb-ic">{t.ic}</span>
+            <span className="tb-ic">
+              <Icon name={t.ic} size={23} stroke={t.match.includes(top) ? 2.4 : 1.9} />
+            </span>
             <span className="tb-t">{t.name}</span>
             {t.path === 'wrong' && due > 0 && <span className="dotbadge">{due}</span>}
           </button>

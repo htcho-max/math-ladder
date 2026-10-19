@@ -1,6 +1,7 @@
 // 디지털 연습장: 화면 위에 펜으로 계산하는 투명 캔버스 (펜·형광펜·지우개·색·굵기·전체 지우기)
 import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
+import { Icon } from './Icon';
 
 type Tool = 'pen' | 'hl' | 'eraser';
 const COLORS = ['#1e293b', '#2563eb', '#dc2626', '#16a34a'];
@@ -9,7 +10,7 @@ const COLORS_DARK = ['#e5e9f2', '#60a5fa', '#f87171', '#4ade80'];
 export function ScratchButton({ on, onToggle }: { on: boolean; onToggle: () => void }) {
   return (
     <button className={'iconbtn scratch-btn' + (on ? ' on' : '')} aria-pressed={on} onClick={onToggle} title="연습장 (손으로 계산하기)">
-      ✏️
+      <Icon name="pencil" size={21} />
     </button>
   );
 }

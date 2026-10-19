@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { CONTENT } from '../content';
 import { COURSE_BY_ID, UNIT_BY_ID } from '../core/curriculum';
 import { problemFromKey } from '../core/problem';
+import { Mascot } from '../ui/Mascot';
 import { BOX_DAYS, dueWrong } from '../lib/mastery';
 import { enc, navigate } from '../lib/router';
 import { updateData, useStore, type WrongItem } from '../lib/store';
@@ -32,7 +33,10 @@ export function WrongPage() {
             </div>
           </>
         ) : (
-          <div className="muted">오늘 복습할 문제는 없어요. {all.filter((w) => !w.graduated).length ? '다음 복습일을 기다려요.' : '틀린 문제가 생기면 여기에 모여요.'}</div>
+          <div className="empty">
+            <Mascot mood="sleepy" size={72} className="empty-mascot" />
+            <div className="muted">오늘 복습할 문제는 없어요. {all.filter((w) => !w.graduated).length ? '다음 복습일을 기다려요.' : '틀린 문제가 생기면 여기에 모여요.'}</div>
+          </div>
         )}
       </section>
       <div className="tabs">

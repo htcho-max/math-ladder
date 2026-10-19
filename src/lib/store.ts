@@ -13,6 +13,8 @@ export interface Settings {
   geminiKey: string;
   geminiModel: string;
   theme: 'auto' | 'light' | 'dark';
+  /** 화면 테마: 학년에 맞게(auto) / 초등 / 중등 / 고등 */
+  look?: 'auto' | 'e' | 'm' | 'h';
   /** 선수 단원 잠금 모드: 선수 단원 별 1개 이상이어야 연습 가능 */
   lockMode?: boolean;
   /** 문제 읽어 주기 버튼: auto(초등 1~4학년) / on / off */
@@ -129,7 +131,7 @@ export interface State {
 }
 
 const emptyData = (): ProfileData => ({ skills: {}, days: {}, wrong: {}, exams: [] });
-const defaultSettings: Settings = { geminiKey: '', geminiModel: 'gemini-2.5-flash-lite', theme: 'auto', choiceMode: 'mix', effects: true, lockMode: false, tts: 'auto' };
+const defaultSettings: Settings = { geminiKey: '', geminiModel: 'gemini-2.5-flash-lite', theme: 'auto', choiceMode: 'mix', effects: true, lockMode: false, tts: 'auto', look: 'auto' };
 
 function read<T>(k: string): T | null {
   try {

@@ -5,6 +5,8 @@ import { BADGES, levelInfo, questText, rwOf, streakDays, todayQuests, courseStar
 import { navigate } from '../lib/router';
 import { activeProfile, dayKey, useStore } from '../lib/store';
 import { Bar, Ring } from '../ui/bits';
+import { Mascot } from '../ui/Mascot';
+import { Icon } from '../ui/Icon';
 
 export function HomePage() {
   const s = useStore((x) => x);
@@ -27,19 +29,32 @@ export function HomePage() {
   const myBadges = BADGES.filter((b) => rw.badges[b.id]).sort((a, b) => rw.badges[b.id] - rw.badges[a.id]);
   const cs = courseStars(d, prof.course);
   const today = d.days[dayKey()] ?? { n: 0, c: 0 };
+  const cheer =
+    today.n >= rw.goal
+      ? '오늘 목표 달성! 정말 멋져요 🎉'
+      : today.n > 0
+        ? `오늘 ${today.n}문제 풀었어요. 목표까지 ${rw.goal - today.n}문제!`
+        : st > 0
+          ? `${st}일째 연속 학습 중! 오늘도 한 칸 올라가 볼까요?`
+          : '오늘도 한 칸씩, 사다리를 올라가 볼까요?';
   const cm = courseMastery(d, prof.course);
   return (
     <div className="page">
-      <section className="hero">
-        <div>
+      <section className="hero-banner">
+        <div className="hb-text">
           <div className="hello">안녕, {prof.name}!</div>
-          <div className="sub">
-            {course?.grade} · {course?.title} 과정{' '}
-            <button className="link" onClick={() => navigate('/settings')}>
-              바꾸기
-            </button>
-          </div>
+          <div className="hb-msg">{cheer}</div>
+          <button className="hb-chip" onClick={() => navigate('/settings')}>
+            {course?.grade} · {course?.title} <span aria-hidden="true">›</span>
+          </button>
         </div>
+        <Mascot mood={today.n >= rw.goal ? 'cheer' : today.n > 0 ? 'happy' : st > 0 ? 'happy' : 'think'} size={104} className="hb-mascot" />
+        <svg className="hb-deco" viewBox="0 0 200 120" preserveAspectRatio="xMaxYMid slice" aria-hidden="true">
+          <text x="118" y="30">+</text>
+          <text x="186" y="44">÷</text>
+          <text x="104" y="112">π</text>
+          <text x="190" y="112">×</text>
+        </svg>
       </section>
 
       <section className="card lvcard">
@@ -140,22 +155,22 @@ export function HomePage() {
 
       <div className="grid2">
         <button className="card tile" onClick={() => navigate(due ? '/review' : '/wrong')}>
-          <div className="tile-ic">📒</div>
+          <div className="tile-ic"><Icon name="note" /></div>
           <div className="tile-t">오답 복습</div>
           <div className="tile-s">{due ? `오늘 ${due}문제` : '오늘은 없어요'}</div>
         </button>
         <button className="card tile" onClick={() => navigate('/exam')}>
-          <div className="tile-ic">📝</div>
+          <div className="tile-ic"><Icon name="exam" /></div>
           <div className="tile-t">시험 보기</div>
           <div className="tile-s">단원평가 · 중간 · 기말</div>
         </button>
         <button className="card tile" onClick={() => navigate('/map')}>
-          <div className="tile-ic">🗺️</div>
+          <div className="tile-ic"><Icon name="map" /></div>
           <div className="tile-t">학습 지도</div>
           <div className="tile-s">초1부터 미적분까지</div>
         </button>
         <button className="card tile" onClick={() => navigate('/stats')}>
-          <div className="tile-ic">📈</div>
+          <div className="tile-ic"><Icon name="chart" /></div>
           <div className="tile-t">기록</div>
           <div className="tile-s">숙련도 · 시험 결과</div>
         </button>

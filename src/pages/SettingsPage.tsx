@@ -196,6 +196,21 @@ export function SettingsPage() {
       <section className="card form">
         <div className="card-h">화면</div>
         <div className="frow">
+          <span>꾸미기</span>
+          <div className="seg">
+            {([
+              ['auto', '학년에 맞게'],
+              ['e', '초등'],
+              ['m', '중등'],
+              ['h', '고등'],
+            ] as const).map(([k, label]) => (
+              <button key={k} className={(s.settings.look ?? 'auto') === k ? 'on' : ''} onClick={() => updateSettings({ look: k })}>
+                {label}
+              </button>
+            ))}
+          </div>
+        </div>
+        <div className="frow">
           <span>테마</span>
           <div className="seg">
             {(['auto', 'light', 'dark'] as const).map((t) => (

@@ -2128,7 +2128,7 @@ textarea.essay {
   position: relative;
   max-width: 520px;
   margin: 0 auto;
-  padding: 0 28px;
+  padding: 0 28px 0 40px;
 }
 .ladder-body::before,
 .ladder-body::after {
@@ -2141,7 +2141,7 @@ textarea.essay {
   background: var(--line);
 }
 .ladder-body::before {
-  left: 8px;
+  left: 20px;
 }
 .ladder-body::after {
   right: 8px;
@@ -2200,7 +2200,7 @@ textarea.essay {
 }
 .climber {
   position: absolute;
-  left: -27px;
+  left: -36px;
   top: 50%;
   transform: translateY(-50%);
   font-size: 26px;
