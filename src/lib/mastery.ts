@@ -23,6 +23,23 @@ export function unitMastery(d: ProfileData, unitId: string): number | null {
   return Math.round(sum / c.skills.length);
 }
 
+/** 풀어 본 유형만으로 본 단원 성적 */
+export function triedMastery(d: ProfileData, unitId: string): { score: number; n: number } | null {
+  const c = CONTENT[unitId];
+  if (!c) return null;
+  let sum = 0,
+    k = 0,
+    n = 0;
+  for (const s of c.skills) {
+    const st = d.skills[skillKey(unitId, s.id)];
+    if (!st?.n) continue;
+    sum += st.score;
+    k++;
+    n += st.n;
+  }
+  return k ? { score: sum / k, n } : null;
+}
+
 export function unitAttempted(d: ProfileData, unitId: string): boolean {
   const c = CONTENT[unitId];
   return !!c?.skills.some((s) => (d.skills[skillKey(unitId, s.id)]?.n ?? 0) > 0);
@@ -131,8 +148,9 @@ export function recommend(d: ProfileData, courseId: string): Recommendation | nu
     const m = unitMastery(d, u.id);
     if (m === null || m >= 80) continue;
     for (const pid of u.prereq) {
-      const pm = unitMastery(d, pid);
-      if (pm !== null && unitAttempted(d, pid) && pm < 50) return { unit: UNIT_BY_ID[pid], reason: 'prereq', target: u };
+      // 선수 단원은 '푼 유형'의 성적만 봄 (안 푼 유형까지 0점으로 치면 조금만 풀어도 늘 낮게 나옴), 6문제 이상 풀었을 때만
+      const pm = triedMastery(d, pid);
+      if (pm !== null && pm.n >= 6 && pm.score < 50) return { unit: UNIT_BY_ID[pid], reason: 'prereq', target: u };
     }
     return { unit: u, reason: unitAttempted(d, u.id) ? 'continue' : 'start' };
   }

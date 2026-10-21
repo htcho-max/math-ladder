@@ -259,3 +259,25 @@ describe('오늘의 학습 — 학년 바꾸기', () => {
     expect(c.course).toBe(activeProfile().course);
   });
 });
+
+import { unitsOf as uo } from '../src/core/curriculum';
+describe('오늘의 학습 — 지난 학년 비율', () => {
+  it('지난 학년 오답·약한 유형이 많아도 지금 학년이 대부분', () => {
+    updateProfile(activeProfile().id, { course: 'e3b' });
+    const now = Date.now();
+    const skills: Record<string, unknown> = {};
+    const wrong: Record<string, unknown> = {};
+    let i = 0;
+    for (const u of uo('e2b'))
+      for (const sk of CONTENT[u.id].skills.slice(0, 2)) {
+        skills[`${u.id}/${sk.id}`] = { score: 40, n: 4, c: 2, last: now - 3 * 864e5 };
+        const key = `${u.id}/${sk.id}/1/${++i}`;
+        wrong[key] = { key, unitId: u.id, skillId: sk.id, box: 0, due: now - 1000, added: now, lastWrong: now, wrongCount: 1 };
+      }
+    const d = { skills, days: {}, wrong, exams: [], rw: { xp: 0, freezes: 0, frozen: {}, badges: {}, goal: 20, goalDays: {}, questDays: {}, maxCombo: 0, hardCorrect: 0, stars: {}, streakRewarded: 0 } } as never;
+    const p = buildDaily(d, '2026-10-21');
+    expect(p.items.length).toBe(20);
+    const old = p.items.filter((x) => UNIT_BY_ID[x.unitId].course === 'e2b').length;
+    expect(old).toBeLessThanOrEqual(5);
+  });
+});
