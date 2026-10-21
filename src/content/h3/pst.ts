@@ -6,6 +6,7 @@ import { factorial, nCr, nPr, round } from '../../core/nt';
 import { makeChoices, numChoices, dec } from '../../core/tex';
 import { NAMES, Ctex, PItex, Htex, fAns, dAns, fChoices, ZTAB, zTable, zKey, stableFig } from './util';
 import { PST_WORD } from './word-pst';
+import { PST_HARD } from './hard-pst';
 
 const fr = (n: number, d: number) => new F(n, d);
 const T = (f: F) => f.tex();
@@ -1767,3 +1768,7 @@ export const pst: ContentMap = {
 
 // 활용(문장제) 유형 덧붙이기
 for (const [u, sk] of Object.entries(PST_WORD)) pst[u].skills.push(...sk);
+for (const [u, h] of Object.entries(PST_HARD)) {
+  pst[u].skills.push(...h.skills);
+  pst[u].top = [...(pst[u].top ?? []), ...h.top];
+}

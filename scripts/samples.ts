@@ -19,7 +19,7 @@ for (const u of UNITS.filter((x) => x.id === prefix || x.course === prefix || (p
     console.log(`\n── ${sk.id}: ${sk.title}`);
     for (const level of [1, 2, 3] as Level[]) {
       for (let s = 1; s <= n; s++) {
-        const d = sk.gen(new Rng((s * 7919) ^ hashStr(`${u.id}/${sk.id}`)), level);
+        const d = sk.gen(new Rng((s * 7919) ^ hashStr(`${u.id}/${sk.id}`)), level as 1 | 2 | 3);
         console.log(`[L${level}] ${d.q.replace(/\n/g, ' / ')}`);
         if (d.table) console.log('   표: ' + d.table.map((r) => r.join(' | ')).join(' ; '));
         if (d.fig) console.log(`   (그림 ${d.fig.length}자)`);

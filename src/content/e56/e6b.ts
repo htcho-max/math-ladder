@@ -8,6 +8,8 @@ import { Svg } from '../../core/fig';
 import { pickName, pickNames, josa, jo, fracAns, intAns, decAns, ft, mt, properFrac, reduceTex, dt, mkDec, nj, ro } from './util';
 import { circleFig, coneFig, cubesFig, cylinderFig, sphereFig, topViewFig, shapeFig, P } from './fig56';
 import { WORD6 } from './words6';
+import { attachHard } from './hard5';
+import { HARD6 } from './hard6';
 
 const piText = (pi: number) => `(원주율: $${pi}$)`;
 const pickPi = (r: Rng, level: Level) => (level === 1 ? r.pick([3, 3.1]) : 3.14);
@@ -1276,3 +1278,6 @@ const p10 = (k: number) => 10 ** k;
 
 // 문장제 추가 유형 (words6.ts) — 기존 유형 뒤에 덧붙임 (기존 id·순서 유지)
 for (const [u, sks] of Object.entries(WORD6)) content[u]?.skills.push(...sks);
+
+// 심화 유형(hard6.ts) — skills 맨 뒤에 덧붙이고, 최상위 유형은 top 에 넣음 (기존 id·순서 유지)
+attachHard(content, HARD6);

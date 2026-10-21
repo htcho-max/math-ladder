@@ -8,17 +8,28 @@ import { M2B_WORD } from './m3h1/word-m2b';
 import { M3A_WORD } from './m3h1/word-m3a';
 import { M3B_WORD } from './m3h1/word-m3b';
 import { HC1_WORD } from './m3h1/word-hc1';
+import { M2B_HARD, M2B_TOP } from './m3h1/hard-m2b';
+import { M3A_HARD, M3A_TOP } from './m3h1/hard-m3a';
+import { M3B_HARD, M3B_TOP } from './m3h1/hard-m3b';
+import { HC1_HARD, HC1_TOP } from './m3h1/hard-hc1';
 
-/** 단원별 문장제(활용) 유형을 기존 유형 뒤에 이어 붙임 */
+/** 단원별 문장제(활용)·심화 유형을 기존 유형 뒤에 이어 붙임 */
 function withWord(base: ContentMap, extra: Record<string, Skill[]>): ContentMap {
   const out: ContentMap = {};
   for (const [id, u] of Object.entries(base)) out[id] = extra[id] ? { ...u, skills: [...u.skills, ...extra[id]] } : u;
   return out;
 }
 
+/** 단원별 최상위 유형(top)을 붙임 */
+function withTop(base: ContentMap, top: Record<string, Skill[]>): ContentMap {
+  const out: ContentMap = {};
+  for (const [id, u] of Object.entries(base)) out[id] = top[id] ? { ...u, top: [...(u.top ?? []), ...top[id]] } : u;
+  return out;
+}
+
 export const content: ContentMap = {
-  ...withWord(m2b, M2B_WORD),
-  ...withWord(m3a, M3A_WORD),
-  ...withWord(m3b, M3B_WORD),
-  ...withWord(hc1, HC1_WORD),
+  ...withTop(withWord(withWord(m2b, M2B_WORD), M2B_HARD), M2B_TOP),
+  ...withTop(withWord(withWord(m3a, M3A_WORD), M3A_HARD), M3A_TOP),
+  ...withTop(withWord(withWord(m3b, M3B_WORD), M3B_HARD), M3B_TOP),
+  ...withTop(withWord(withWord(hc1, HC1_WORD), HC1_HARD), HC1_TOP),
 };

@@ -6,6 +6,7 @@ import { simplifySqrt, gcd } from '../../core/nt';
 import { makeChoices, sqrtTex, linTex, poly, termsTex } from '../../core/tex';
 import { fAns, fChoices, texChoices, TRIPLES, QUADS, coef, shiftSq, deg, stableFig, ro } from './util';
 import { GEO_WORD } from './word-geo';
+import { GEO_HARD } from './hard-geo';
 
 const fr = (n: number, d = 1) => new F(n, d);
 const T = (f: F) => f.tex();
@@ -1328,3 +1329,7 @@ void fChoices;
 
 // 활용(문장제) 유형 덧붙이기
 for (const [u, sk] of Object.entries(GEO_WORD)) geo[u].skills.push(...sk);
+for (const [u, h] of Object.entries(GEO_HARD)) {
+  geo[u].skills.push(...h.skills);
+  geo[u].top = [...(geo[u].top ?? []), ...h.top];
+}

@@ -902,6 +902,10 @@ main {
   background: var(--amber-bg);
   color: var(--accent2);
 }
+.lv[data-lv='4'] {
+  background: linear-gradient(90deg, #ff8a3d, #e8364f);
+  color: #fff;
+}
 .pbody {
   display: flex;
   flex-direction: column;

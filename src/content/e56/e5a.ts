@@ -8,6 +8,7 @@ import { regularPolygon, Svg } from '../../core/fig';
 import { pickName, pickNames, josa, jo, fracAns, intAns, decAns, ft, mt, properFrac, reduceTex, dt, places, nj, ro, fj, p10 } from './util';
 import { shapeFig, P } from './fig56';
 import { WORD5 } from './words5';
+import { HARD5, attachHard } from './hard5';
 
 // ───────────── 혼합 계산 (식 나무) ─────────────
 type Op = '+' | '-' | '*' | '/';
@@ -133,9 +134,9 @@ function makeExpr(r: Rng, shapes: string[], level: Level, max = 999): { e: E; v:
   return { e, v: 24 };
 }
 
-function exprSkill(shapes: Record<Level, string[]>, max: Record<Level, number>) {
+function exprSkill(shapes: Record<1 | 2 | 3, string[]>, max: Record<1 | 2 | 3, number>) {
   return (r: Rng, level: Level): ProblemDraft => {
-    const { e, v } = makeExpr(r, shapes[level], level, max[level]);
+    const { e, v } = makeExpr(r, shapes[level as 1 | 2 | 3], level, max[level as 1 | 2 | 3]);
     return {
       q: `다음을 계산하세요.\n$$${texE(e)}$$`,
       answer: intAns(v),
@@ -1671,3 +1672,6 @@ export const content: ContentMap = {
 
 // 문장제 추가 유형 (words5.ts) — 기존 유형 뒤에 덧붙임 (기존 id·순서 유지)
 for (const [u, sks] of Object.entries(WORD5)) content[u]?.skills.push(...sks);
+
+// 심화 유형(hard5.ts) — skills 맨 뒤에 덧붙이고, 최상위 유형은 top 에 넣음 (기존 id·순서 유지)
+attachHard(content, HARD5);

@@ -36,6 +36,7 @@ function finish(map: ContentMap): ContentMap {
         example: c.example ? { q: fixJosa(c.example.q), a: fixJosa(c.example.a) } : undefined,
       })),
       skills: u.skills.map((s) => ({ ...s, gen: (r, level) => polish(s.gen(r, level)) })),
+      ...(u.top ? { top: u.top.map((s) => ({ ...s, gen: (r, level) => polish(s.gen(r, level)) })) } : {}),
     };
   }
   return res;

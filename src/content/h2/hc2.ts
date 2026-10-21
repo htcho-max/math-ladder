@@ -6,6 +6,7 @@ import { poly, sqrtTex, termsTex } from '../../core/tex';
 import { Plane } from '../../core/fig';
 import { L, cv, figOut, josa, texJosa, circleTex, lineTex, pt, setTex, sqTerm, tch, wch, xm, yEq } from './util';
 import { HC2_WORD } from './word-hc2';
+import { HC2_HARD } from './hard-hc2';
 
 const TRIPLES: [number, number, number][] = [
   [3, 4, 5],
@@ -1623,3 +1624,7 @@ function paren(n: number): string {
 
 // 활용(문장제) 유형 덧붙이기
 for (const [u, sk] of Object.entries(HC2_WORD)) hc2[u].skills.push(...sk);
+for (const [u, h] of Object.entries(HC2_HARD)) {
+  hc2[u].skills.push(...h.skills);
+  hc2[u].top = [...(hc2[u].top ?? []), ...h.top];
+}

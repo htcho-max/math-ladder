@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { CONTENT } from '../content';
 import { COURSE_BY_ID, UNIT_BY_ID } from '../core/curriculum';
-import { problemFromKey } from '../core/problem';
+import { problemFromKey, getSkill } from '../core/problem';
 import { Mascot } from '../ui/Mascot';
 import { BOX_DAYS, dueWrong } from '../lib/mastery';
 import { enc, navigate } from '../lib/router';
@@ -60,7 +60,7 @@ export function WrongPage() {
 function WrongRow({ w, now }: { w: WrongItem; now: number }) {
   const p = problemFromKey(w.key);
   const u = UNIT_BY_ID[w.unitId];
-  const sk = CONTENT[w.unitId]?.skills.find((s) => s.id === w.skillId);
+  const sk = getSkill(w.unitId, w.skillId);
   const days = Math.ceil((w.due - now) / 86400000);
   return (
     <section className="card wrow">

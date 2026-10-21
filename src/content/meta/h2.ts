@@ -9,6 +9,7 @@ export const META: MetaMap = {
       '점과 직선 사이 거리에서 직선을 $y=mx+n$ 꼴 그대로 넣어요 → 먼저 $ax+by+c=0$ 꼴로 정리한 뒤 공식에 대입해요.',
     ],
     cats: {
+      'fixed-point-line': 'calc',
       'coord-word': 'word',
       distance: 'calc',
       'internal-point': 'calc',
@@ -24,6 +25,7 @@ export const META: MetaMap = {
       '현의 길이를 구할 때 중심과 직선 사이 거리 $d$ 를 그대로 반으로 써요 → 현의 절반은 $\\sqrt{r^{2}-d^{2}}$ 이고 현의 길이는 그 2배예요.',
     ],
     cats: {
+      'chord-through-point': 'calc',
       'circle-word': 'word',
       'center-radius': 'calc',
       'circle-equation': 'calc',
@@ -39,6 +41,7 @@ export const META: MetaMap = {
       '$y=x$ 대칭과 원점 대칭을 헷갈려요 → $y=x$ 대칭은 $(a,b)\\to(b,a)$, 원점 대칭은 $(a,b)\\to(-a,-b)$ 예요.',
     ],
     cats: {
+      'move-then-tangent': 'calc',
       'shortest-path': 'word',
       'point-translate': 'calc',
       'point-reflect': 'calc',
@@ -53,6 +56,7 @@ export const META: MetaMap = {
       '공집합 $\\varnothing$ 이나 자기 자신을 부분집합에서 빠뜨려요 → 원소가 $n$ 개면 이 둘을 포함해 부분집합은 $2^{n}$ 개예요.',
     ],
     cats: {
+      'subset-condition-count': 'calc',
       'set-word': 'word',
       'subset-count': 'calc',
       'set-operations': 'calc',
@@ -67,6 +71,7 @@ export const META: MetaMap = {
       '산술·기하평균으로 최솟값을 구하고 등호 조건을 확인하지 않아요 → 등호가 성립하는 $x$ 가 조건 안에 있는지 꼭 확인해요.',
     ],
     cats: {
+      'forall-quadratic': 'calc',
       'am-gm-word': 'word',
       'necessary-sufficient': 'concept',
       'converse-contrapositive': 'concept',
@@ -82,6 +87,7 @@ export const META: MetaMap = {
       '역함수를 구한 뒤 정의역 조건을 버려요 → 원래 함수의 치역이 역함수의 정의역이 되니 범위를 함께 써요.',
     ],
     cats: {
+      'inverse-intersection': 'calc',
       'function-word': 'word',
       'composite-value': 'calc',
       'inverse-value': 'calc',
@@ -97,6 +103,7 @@ export const META: MetaMap = {
       '유리함수 최대·최소를 구간 양 끝값으로만 구하면서 그래프의 증감을 무시해요 → 점근선 기준으로 증가·감소를 먼저 확인해요.',
     ],
     cats: {
+      'irrational-line-count': 'calc',
       'rational-word': 'word',
       asymptote: 'calc',
       'rational-maxmin': 'calc',
@@ -114,6 +121,7 @@ export const META: MetaMap = {
       '음수 지표의 상용로그를 $-1.7$ 그대로 지표 $-1$ 로 읽어요 → $-1.7=-2+0.3$ 처럼 가수가 $0$ 이상이 되게 바꿔 지표를 정해요.',
     ],
     cats: {
+      'root-real-count': 'calc',
       'log-formula': 'word',
       'nth-root': 'calc',
       'exponent-calc': 'calc',
@@ -129,6 +137,7 @@ export const META: MetaMap = {
       '$3^{x}=t$ 로 치환하고 $t$ 의 범위를 잊어요 → $t>0$ 이므로 음수인 $t$ 값은 버려야 해요.',
     ],
     cats: {
+      'exp-substitution-maxmin': 'calc',
       'exp-growth': 'word',
       'exp-equation': 'calc',
       'log-equation': 'calc',
@@ -144,6 +153,7 @@ export const META: MetaMap = {
       '$y=a\\sin bx$ 의 주기를 $2\\pi b$ 로 계산해요 → 주기는 $\\frac{2\\pi}{|b|}$ 이고 $\\tan$ 은 $\\frac{\\pi}{|b|}$ 예요.',
     ],
     cats: {
+      'trig-quad-equation': 'calc',
       'periodic-word': 'word',
       radian: 'calc',
       sector: 'calc',
@@ -160,6 +170,7 @@ export const META: MetaMap = {
       '삼각형 넓이를 $\\frac{1}{2}bc\\cos A$ 로 계산해요 → 넓이는 끼인각의 사인을 써서 $\\frac{1}{2}bc\\sin A$ 예요.',
     ],
     cats: {
+      'inradius-circumradius': 'calc',
       'sine-law': 'calc',
       'cosine-side': 'calc',
       'triangle-shape': 'calc',
@@ -174,6 +185,7 @@ export const META: MetaMap = {
       '등비수열의 합을 $\\frac{a(r^{n}-1)}{r-1}$ 에 $r=1$ 일 때도 대입해요 → $r=1$ 이면 합은 $na$ 예요.',
     ],
     cats: {
+      'arith-max-sum': 'calc',
       'seq-word': 'word',
       'arith-term': 'calc',
       'arith-sum': 'calc',
@@ -190,6 +202,7 @@ export const META: MetaMap = {
       '분수 꼴 합을 부분분수로 나눈 뒤 앞뒤에 남는 항을 빠뜨려요 → 몇 개 항을 직접 써 보며 지워지지 않는 항을 확인해요.',
     ],
     cats: {
+      'group-seq': 'calc',
       'sigma-word': 'word',
       'sigma-poly': 'calc',
       'sigma-property': 'concept',
@@ -205,6 +218,7 @@ export const META: MetaMap = {
       '수학적 귀납법에서 $n=k$ 일 때의 식을 쓰고 바로 $n=k+1$ 이 성립한다고 써요 → 가정한 식의 양변에 다음 항을 더해 $k+1$ 꼴로 정리해야 해요.',
     ],
     cats: {
+      'recursive-parity': 'calc',
       'recursive-word': 'word',
       'recursive-term': 'calc',
       'recursive-type': 'calc',
@@ -221,6 +235,7 @@ export const META: MetaMap = {
       '극한값이 존재하고 분모가 $0$ 으로 가는데 분자 조건을 쓰지 않아요 → 분자도 $0$ 으로 가야 하니 (분자)$=0$ 으로 식을 하나 세워요.',
     ],
     cats: {
+      'poly-from-limits': 'calc',
       'limit-poly': 'calc',
       'limit-infinity': 'calc',
       'one-sided': 'concept',
@@ -235,6 +250,7 @@ export const META: MetaMap = {
       '사잇값 정리로 실근 존재를 말하면서 연속성을 확인하지 않아요 → 닫힌구간에서 연속이고 $f(a)f(b)<0$ 일 때 실근이 있어요.',
     ],
     cats: {
+      'composite-continuity': 'calc',
       'piecewise-continuous': 'calc',
       'discontinuity-count': 'concept',
       ivt: 'concept',
@@ -248,6 +264,7 @@ export const META: MetaMap = {
       '미분가능 조건에서 미분계수만 맞추고 연속 조건을 빠뜨려요 → 먼저 연속(함숫값 일치), 그다음 좌우 미분계수 일치를 둘 다 세워요.',
     ],
     cats: {
+      'derivative-remainder': 'calc',
       'rate-word': 'word',
       'avg-rate': 'calc',
       'derivative-value': 'calc',
@@ -263,6 +280,7 @@ export const META: MetaMap = {
       '실수 전체에서 증가할 조건을 $f\'(x)>0$ 의 판별식 $D<0$ 으로만 잡아요 → $f\'(x)\\ge0$ 이면 되므로 $D\\le0$ 이에요.',
     ],
     cats: {
+      'cubic-extreme-diff': 'calc',
       'optimize-word': 'word',
       'motion-word': 'word',
       tangent: 'calc',
@@ -280,6 +298,7 @@ export const META: MetaMap = {
       '$\\frac{d}{dx}\\int f(x)dx$ 와 $\\int\\left\\{\\frac{d}{dx}f(x)\\right\\}dx$ 를 같게 봐요 → 앞은 $f(x)$, 뒤는 $f(x)+C$ 예요.',
     ],
     cats: {
+      'piecewise-antideriv': 'calc',
       'rate-to-amount': 'word',
       antiderivative: 'calc',
       'antiderivative-condition': 'calc',
@@ -295,6 +314,7 @@ export const META: MetaMap = {
       '$\\frac{d}{dx}\\int_{a}^{x}f(t)dt$ 를 $f(x)-f(a)$ 로 써요 → 결과는 $f(x)$ 이고, $x=a$ 를 넣으면 정적분은 $0$ 이에요.',
     ],
     cats: {
+      'odd-even-periodic': 'calc',
       'accumulate-word': 'word',
       definite: 'calc',
       'abs-piecewise': 'calc',
@@ -310,6 +330,7 @@ export const META: MetaMap = {
       '움직인 거리를 $\\int v(t)dt$ 로 구해요 → 그건 위치의 변화량이고, 거리는 $\\int|v(t)|dt$ 예요.',
     ],
     cats: {
+      'tangent-area': 'calc',
       'motion-integral': 'word',
       'area-word': 'word',
       'area-axis': 'calc',

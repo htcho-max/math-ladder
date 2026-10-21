@@ -1,8 +1,10 @@
 // 수학 사다리 — 핵심 타입 (콘텐츠 작성자와 앱이 공유하는 약속)
 import type { Rng } from './rng';
 
-/** 난이도: 1 기본, 2 보통, 3 심화(시험 응용) */
-export type Level = 1 | 2 | 3;
+/** 난이도: 1 기본, 2 보통, 3 심화(시험 응용), 4 최상위(최상위 문제집·경시 맛보기 — UnitContent.top 유형 전용) */
+export type Level = 1 | 2 | 3 | 4;
+/** 일반 유형 생성기가 받는 난이도 (최상위 4 는 top 유형만) */
+export type GenLevel = 1 | 2 | 3;
 
 /** 영역(계통): 수와 연산 / 문자와 식 / 함수와 미적분 / 도형과 측정 / 자료와 가능성 */
 export type Strand = 'num' | 'alg' | 'func' | 'geo' | 'data';
@@ -46,7 +48,7 @@ export interface Skill {
   /** 학생에게 보이는 유형 이름 (예: '받아올림 있는 덧셈') */
   title: string;
   /** 문제 생성기: 같은 rng 시드면 같은 문제가 나와야 함 (Math.random 금지) */
-  gen: (r: Rng, level: Level) => ProblemDraft;
+  gen: (r: Rng, level: GenLevel) => ProblemDraft;
 }
 
 export interface Concept {
@@ -60,6 +62,8 @@ export interface Concept {
 export interface UnitContent {
   concepts: Concept[];
   skills: Skill[];
+  /** 최상위 도전 전용 유형 (level 4 로만 출제, 일반 연습·오늘의 학습·시험·숙련도에는 안 들어감) */
+  top?: Skill[];
 }
 
 export type ContentMap = Record<string, UnitContent>;

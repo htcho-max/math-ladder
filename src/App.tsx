@@ -39,6 +39,7 @@ function Page({ r }: { r: string[] }) {
       return <UnitPage id={b} />;
     case 'practice':
       if (b === 'c' && c && (d === 'calc' || d === 'concept' || d === 'word')) return <PracticePage mode={{ kind: 'unit', unitId: c, cat: d }} />;
+      if (b === 't' && c) return <PracticePage mode={{ kind: 'unit', unitId: c, top: true }} />;
       if (b === 'h' && c) return <PracticePage mode={{ kind: 'unit', unitId: c, hard: true }} />;
       return b === 'u' && c ? <PracticePage mode={{ kind: 'unit', unitId: c, skillId: d }} /> : <NotFound />;
     case 'review':

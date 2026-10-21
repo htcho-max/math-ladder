@@ -15,7 +15,7 @@ export const MIX: Record<Mix, { name: string; p: [number, number, number] }> = {
   standard: { name: '표준', p: [0.3, 0.5, 0.2] },
   hard: { name: '심화', p: [0.1, 0.4, 0.5] },
 };
-export const POINTS: Record<Level, number> = { 1: 3, 2: 4, 3: 5 };
+export const POINTS: Record<Level, number> = { 1: 3, 2: 4, 3: 5, 4: 6 };
 
 export interface ExamItem {
   key: string;

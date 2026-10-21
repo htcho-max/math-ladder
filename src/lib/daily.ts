@@ -53,7 +53,8 @@ export function buildDaily(d: ProfileData, day = dayKey()): DailyPlan {
   const detour = rec?.reason === 'prereq' && rec.target ? rec.target.id : undefined;
   const mineUnits = new Set(unitsOf(course).map((u) => u.id));
   // 오답 복습: 지금 학년 것을 먼저, 다른 학년 오답은 2개까지
-  const dueAll = dueWrong(d);
+  // 최상위(level 4) 오답은 오늘의 학습 복습에서 빼고 오답노트에서만
+  const dueAll = dueWrong(d).filter((w) => w.key.split('/')[2] !== '4');
   const dueMine = dueAll.filter((w) => mineUnits.has(w.unitId));
   const due = [...dueMine, ...dueAll.filter((w) => !mineUnits.has(w.unitId)).slice(0, 2)];
   const nReview = Math.min(5, due.length, Math.floor(goal * 0.3));

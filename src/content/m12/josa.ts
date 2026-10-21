@@ -92,6 +92,7 @@ export function withJosaFix(map: ContentMap): ContentMap {
       concepts: u.concepts,
       skills: u.skills.map((sk) => ({ ...sk, gen: (r, level) => fixDraft(sk.gen(r, level)) })),
     };
+    if (u.top) out[id].top = u.top.map((sk) => ({ ...sk, gen: (r, level) => fixDraft(sk.gen(r, level)) }));
   }
   return out;
 }

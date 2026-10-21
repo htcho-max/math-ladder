@@ -2,13 +2,13 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { CONTENT } from '../content';
 import { COURSE_BY_ID, UNIT_BY_ID } from '../core/curriculum';
 import { judge, type UserAnswer, type Verdict } from '../core/check';
-import { makeProblem, pickChoice, problemFromKey } from '../core/problem';
+import { makeProblem, pickChoice, problemFromKey, getSkill } from '../core/problem';
 import { randomSeed } from '../core/rng';
 import type { Level, Problem } from '../core/types';
 import { dueWrong, recordAnswer, skillScore, startLevel, unitMastery } from '../lib/mastery';
 import { navigate } from '../lib/router';
 import { choiceRatio, getState, useStore } from '../lib/store';
-import { HINT_XP, rewardDaily, rewardAnswer, todayQuests, questText, levelInfo, rwOf } from '../lib/reward';
+import { HINT_XP, LEVEL_NAME, LEVEL_XP, rewardDaily, rewardAnswer, todayQuests, questText, levelInfo, rwOf } from '../lib/reward';
 import { unitAttempted } from '../lib/mastery';
 import { Header, Ring, UnitLink } from '../ui/bits';
 import { AnswerInput, Feedback, ProblemBody } from '../ui/ProblemView';
@@ -26,7 +26,7 @@ import { recommend } from '../lib/mastery';
 import { activeProfile } from '../lib/store';
 
 export type PracticeMode =
-  | { kind: 'unit'; unitId: string; skillId?: string; cat?: Cat; hard?: boolean }
+  | { kind: 'unit'; unitId: string; skillId?: string; cat?: Cat; hard?: boolean; top?: boolean }
   | { kind: 'review' }
   | { kind: 'retry'; key: string }
   | { kind: 'similar'; key: string }
@@ -112,16 +112,16 @@ function buildPlan(mode: PracticeMode): Plan | null {
     if (!c || !u) return null;
     const sk = mode.skillId ? c.skills.find((s) => s.id === mode.skillId) : undefined;
     if (mode.skillId && !sk) return null;
-    const pool = mode.cat ? c.skills.filter((x) => skillCat(u.id, x.id) === mode.cat) : c.skills;
+    const pool = mode.top ? c.top ?? [] : mode.cat ? c.skills.filter((x) => skillCat(u.id, x.id) === mode.cat) : c.skills;
     if (!pool.length) return null;
     const base = sk ? skillScore(d, u.id, sk.id) : unitMastery(d, u.id) ?? 0;
     return {
-      title: mode.hard ? `${u.title} · 심화 도전` : sk ? sk.title : mode.cat ? `${u.title} · ${CAT_NAME[mode.cat]}` : `${u.title} 연습`,
+      title: mode.top ? `${u.title} · 최상위 도전` : mode.hard ? `${u.title} · 심화 도전` : sk ? sk.title : mode.cat ? `${u.title} · ${CAT_NAME[mode.cat]}` : `${u.title} 연습`,
       back: `/unit/${u.id}`,
       total: N,
-      startLevel: mode.hard ? 3 : startLevel(base),
+      startLevel: mode.top ? 4 : mode.hard ? 3 : startLevel(base),
       unitId: u.id,
-      adaptive: !mode.hard,
+      adaptive: !mode.hard && !mode.top,
       next(_i, level, prev) {
         let skillId = sk?.id;
         if (!skillId) {
@@ -239,7 +239,7 @@ export function PracticePage({ mode }: { mode: PracticeMode }) {
     setCombo(c);
     const x = rewardAnswer(cur.p, v.ok, { combo: c, review: !!cur.reviewOf && !cur.twin, newUnit, hints: hintLv, twin: !!cur.twin });
     setGain(x);
-    setBaseGain(v.ok ? Math.round([10, 15, 20][cur.p.level - 1] * HINT_XP[Math.min(3, hintLv)]) : 2);
+    setBaseGain(v.ok ? Math.round(LEVEL_XP[cur.p.level - 1] * HINT_XP[Math.min(3, hintLv)]) : 2);
     setSessionXp((t) => t + x);
     setDone((x) => [...x, { p: cur.p, ok: v.ok, twin: !!cur.twin }]);
     if (!cur.twin) plan.onGraded?.(idx, v.ok);
@@ -375,7 +375,7 @@ export function PracticePage({ mode }: { mode: PracticeMode }) {
 
   const p = cur.p;
   const u = UNIT_BY_ID[p.unitId];
-  const skill = CONTENT[p.unitId]?.skills.find((s) => s.id === p.skillId);
+  const skill = getSkill(p.unitId, p.skillId);
   return (
     <div className="page practice">
       <Header title={plan.title} back={plan.back}>
@@ -396,7 +396,7 @@ export function PracticePage({ mode }: { mode: PracticeMode }) {
       <section className="card pcard">
         <div className="pmeta">
           <span className="lv" data-lv={p.level}>
-            {['기본', '보통', '심화'][p.level - 1]}
+            {LEVEL_NAME[p.level - 1]}
           </span>
           <span className="muted small">
             {COURSE_BY_ID[u.course].title} {u.title} · {skill?.title}

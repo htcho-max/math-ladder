@@ -12,6 +12,8 @@ import { m2a2 } from './m12/m2a2';
 import { withJosaFix } from './m12/josa';
 import { word1 } from './m12/word1';
 import { word2 } from './m12/word2';
+import { hard1 } from './m12/hard1';
+import { hard2 } from './m12/hard2';
 
 /** 소인수분해 TeX: 2^{3}\times 3\times 5 */
 const factTex = (n: number) =>
@@ -173,6 +175,11 @@ const raw: ContentMap = {
 
 // 활용(문장제) 유형 추가분을 각 단원 유형 목록 뒤에 붙임
 for (const [id, sks] of Object.entries({ ...word1, ...word2 })) raw[id].skills.push(...sks);
+// 심화 유형은 skills 뒤에, 최상위 유형은 top 으로
+for (const [id, h] of Object.entries({ ...hard1, ...hard2 })) {
+  raw[id].skills.push(...h.skills);
+  raw[id].top = [...(raw[id].top ?? []), ...h.top];
+}
 
 /** 수식 뒤 조사(을/를, 이/가 …)를 자동 교정해서 내보냄 */
 export const content: ContentMap = withJosaFix(raw);

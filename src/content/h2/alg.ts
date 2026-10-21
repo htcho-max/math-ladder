@@ -5,6 +5,7 @@ import { divisors, gcd, simplifySqrt, range } from '../../core/nt';
 import { poly, sqrtTex, termsTex } from '../../core/tex';
 import { L, NAMES, cv, deg, josa, texJosa, piTex, radTex, radian, tch, wch } from './util';
 import { ALG_WORD } from './word-alg';
+import { ALG_HARD } from './hard-alg';
 
 // ───────────── 삼각함수 특수각 ─────────────
 const S2 = Math.SQRT2 / 2,
@@ -1897,3 +1898,7 @@ function paren(n: number): string {
 
 // 활용(문장제) 유형 덧붙이기
 for (const [u, sk] of Object.entries(ALG_WORD)) alg[u].skills.push(...sk);
+for (const [u, h] of Object.entries(ALG_HARD)) {
+  alg[u].skills.push(...h.skills);
+  alg[u].top = [...(alg[u].top ?? []), ...h.top];
+}

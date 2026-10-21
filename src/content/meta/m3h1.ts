@@ -17,6 +17,7 @@ export const META: MetaMap = {
       'centers-concept': 'concept',
       'circum-word': 'word',
       'incircle-word': 'word',
+      'iso-chain': 'calc',
     },
   },
   'm2b-2': {
@@ -33,6 +34,7 @@ export const META: MetaMap = {
       'area-parallel': 'calc',
       'para-word': 'word',
       'quad-area-word': 'word',
+      'para-bisector': 'calc',
     },
   },
   'm2b-3': {
@@ -49,6 +51,7 @@ export const META: MetaMap = {
       centroid: 'calc',
       'shadow': 'word',
       'scale-word': 'word',
+      'trap-parallel': 'calc',
     },
   },
   'm2b-4': {
@@ -65,6 +68,7 @@ export const META: MetaMap = {
       'sqrt-length': 'calc',
       'ladder': 'word',
       'shortest-path': 'word',
+      'pyth-fold': 'calc',
     },
   },
   'm2b-5': {
@@ -78,6 +82,7 @@ export const META: MetaMap = {
       'basic-prob': 'word',
       complement: 'word',
       'and-or': 'word',
+      'dice-condition': 'word',
     },
   },
 
@@ -96,6 +101,7 @@ export const META: MetaMap = {
       'number-line': 'concept',
       'square-side': 'word',
       'sqrt-fall': 'word',
+      'floor-sqrt-sum': 'calc',
     },
   },
   'm3a-2': {
@@ -112,6 +118,7 @@ export const META: MetaMap = {
       mixed: 'calc',
       'surd-area': 'word',
       'surd-perimeter': 'word',
+      'surd-rational': 'calc',
     },
   },
   'm3a-3': {
@@ -127,6 +134,7 @@ export const META: MetaMap = {
       'perfect-square': 'calc',
       'calc-trick': 'calc',
       'area-word': 'word',
+      'cond-value': 'calc',
     },
   },
   'm3a-4': {
@@ -142,6 +150,7 @@ export const META: MetaMap = {
       discriminant: 'calc',
       word: 'word',
       'word-advanced': 'word',
+      'root-cond': 'calc',
     },
   },
   'm3a-5': {
@@ -158,6 +167,7 @@ export const META: MetaMap = {
       property: 'concept',
       'vertex-word': 'word',
       'model-word': 'word',
+      'parabola-area': 'calc',
     },
   },
 
@@ -176,6 +186,7 @@ export const META: MetaMap = {
       'trig-table': 'calc',
       'height-word': 'word',
       'distance-word': 'word',
+      'trig-two-angles': 'calc',
     },
   },
   'm3b-2': {
@@ -192,6 +203,7 @@ export const META: MetaMap = {
       'arc-ratio': 'calc',
       'plate-radius': 'word',
       'tangent-word': 'word',
+      'tangent-inscribed': 'calc',
     },
   },
   'm3b-3': {
@@ -209,6 +221,7 @@ export const META: MetaMap = {
       scatter: 'concept',
       'stat-interpret': 'word',
       'stat-missing': 'word',
+      'stat-combine': 'calc',
     },
   },
 
@@ -226,6 +239,7 @@ export const META: MetaMap = {
       division: 'calc',
       expand3: 'calc',
       'poly-word': 'word',
+      'three-var-sym': 'calc',
     },
   },
   'hc1-2': {
@@ -240,6 +254,7 @@ export const META: MetaMap = {
       'factor-thm': 'calc',
       synthetic: 'calc',
       'coef-sum': 'calc',
+      'remainder-tricks': 'calc',
     },
   },
   'hc1-3': {
@@ -255,6 +270,7 @@ export const META: MetaMap = {
       'multi-var': 'calc',
       evaluate: 'calc',
       'factor-word': 'word',
+      'factor-triangle': 'concept',
     },
   },
   'hc1-4': {
@@ -270,6 +286,7 @@ export const META: MetaMap = {
       vieta: 'calc',
       'make-eq': 'calc',
       'vieta-word': 'word',
+      'vieta-cond': 'calc',
     },
   },
   'hc1-5': {
@@ -285,6 +302,7 @@ export const META: MetaMap = {
       applied: 'word',
       intercepts: 'calc',
       'fence-word': 'word',
+      'range-minmax-param': 'calc',
     },
   },
   'hc1-6': {
@@ -301,6 +319,7 @@ export const META: MetaMap = {
       omega: 'calc',
       'quad-ineq-word': 'word',
       'system-word': 'word',
+      'ineq-always': 'calc',
     },
   },
   'hc1-7': {
@@ -315,6 +334,7 @@ export const META: MetaMap = {
       combination: 'word',
       digits: 'word',
       'npr-eq': 'calc',
+      'comb-complement': 'word',
     },
   },
   'hc1-8': {
@@ -331,6 +351,7 @@ export const META: MetaMap = {
       power: 'calc',
       'matrix-table': 'word',
       'matrix-weight': 'word',
+      'matrix-pattern': 'calc',
     },
   },
 };

@@ -1,12 +1,13 @@
 // 문제 만들기 (키 ↔ 문제)
 import { CONTENT } from '../content';
 import { Rng, hashStr } from './rng';
-import type { Level, Problem, Skill } from './types';
+import type { GenLevel, Level, Problem, Skill } from './types';
 import { polish } from './polish';
 import { toChoice } from './tochoice';
 
 export function getSkill(unitId: string, skillId: string): Skill | undefined {
-  return CONTENT[unitId]?.skills.find((s) => s.id === skillId);
+  const c = CONTENT[unitId];
+  return c?.skills.find((s) => s.id === skillId) ?? c?.top?.find((s) => s.id === skillId);
 }
 
 /** asChoice: 주관식 문제를 5지선다로 바꿔 냄 (키 끝에 '/c') */
@@ -14,7 +15,7 @@ export function makeProblem(unitId: string, skillId: string, level: Level, seed:
   const sk = getSkill(unitId, skillId);
   if (!sk) throw new Error(`없는 유형: ${unitId}/${skillId}`);
   const r = new Rng(seed ^ hashStr(`${unitId}/${skillId}`));
-  const d = polish(sk.gen(r, level), unitId);
+  const d = polish(sk.gen(r, Math.min(level, 3) as GenLevel), unitId);
   const p: Problem = { ...d, key: `${unitId}/${skillId}/${level}/${seed}`, unitId, skillId, level, seed };
   return asChoice ? toChoice(p) : p;
 }

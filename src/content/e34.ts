@@ -7,6 +7,8 @@ import { content as e4a } from './e34/e4a';
 import { content as e4b } from './e34/e4b';
 import { WORDS3 } from './e34/words3';
 import { WORDS4 } from './e34/words4';
+import { HARD3, TOP3 } from './e34/hard3';
+import { HARD4, TOP4 } from './e34/hard4';
 
 /** 생성된 문제의 '숫자+조사'를 읽기에 맞게 교정 */
 function fixDraft(d: ProblemDraft): ProblemDraft {
@@ -22,14 +24,26 @@ function fixDraft(d: ProblemDraft): ProblemDraft {
   };
 }
 
-/** 문장제 추가 유형 (단원 id → 유형들). 기존 유형 뒤에 붙임 (기존 id 는 그대로) */
-const EXTRA: Record<string, Skill[]> = { ...WORDS3, ...WORDS4 };
+/** 문장제·심화 추가 유형 (단원 id → 유형들). 기존 유형 뒤에 붙임 (기존 id 는 그대로) */
+const EXTRA: Record<string, Skill[]> = {};
+for (const m of [WORDS3, WORDS4, HARD3, HARD4]) for (const [id, sks] of Object.entries(m)) EXTRA[id] = [...(EXTRA[id] ?? []), ...sks];
+/** 최상위 유형 (UnitContent.top) */
+const TOP: Record<string, Skill[]> = { ...TOP3, ...TOP4 };
+
+const wrapSkill = (s: Skill): Skill => ({
+  ...s,
+  gen: (r, l) => fixDraft(s.gen(r, l)),
+});
 
 function wrap(...maps: ContentMap[]): ContentMap {
   const out: ContentMap = {};
   for (const m of maps)
     for (const [id, u] of Object.entries(m))
-      out[id] = { concepts: u.concepts, skills: [...u.skills, ...(EXTRA[id] ?? [])].map((s) => ({ ...s, gen: (r, l) => fixDraft(s.gen(r, l)) })) };
+      out[id] = {
+        concepts: u.concepts,
+        skills: [...u.skills, ...(EXTRA[id] ?? [])].map(wrapSkill),
+        ...(TOP[id] ? { top: TOP[id].map(wrapSkill) } : {}),
+      };
   return out;
 }
 

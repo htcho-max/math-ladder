@@ -9,6 +9,7 @@ export const META: MetaMap = {
       '양의 정수해 개수를 음이 아닌 정수해처럼 바로 ${}_{n}\\mathrm{H}_{r}$ 로 세요 → 각 변수에 $1$ 씩 먼저 나눠 준 뒤 남은 수로 중복조합을 써요.',
     ],
     cats: {
+      'eq-solutions-bounds': 'calc',
       circular: 'word',
       'rep-perm': 'calc',
       'same-perm': 'calc',
@@ -23,6 +24,7 @@ export const META: MetaMap = {
       '이항계수의 합 ${}_{n}\\mathrm{C}_{0}+\\cdots+{}_{n}\\mathrm{C}_{n}$ 을 $n^{2}$ 등으로 써요 → $(1+1)^{n}$ 을 전개한 것이라 $2^{n}$ 이에요.',
     ],
     cats: {
+      'binom-sum-identities': 'calc',
       coef: 'calc',
       'coef-product': 'calc',
       'binom-sum': 'calc',
@@ -37,6 +39,7 @@ export const META: MetaMap = {
       '$P(A\\cup B)=P(A)+P(B)$ 로 계산해요 → 배반이 아니면 $P(A\\cap B)$ 를 한 번 빼야 해요.',
     ],
     cats: {
+      'prob-function': 'calc',
       'prob-word': 'word',
       dice: 'calc',
       draw: 'calc',
@@ -52,6 +55,7 @@ export const META: MetaMap = {
       '독립시행 확률에서 ${}_{n}\\mathrm{C}_{r}$ 을 빠뜨려 $p^{r}(1-p)^{n-r}$ 만 써요 → 성공하는 $r$ 번의 위치를 고르는 경우 ${}_{n}\\mathrm{C}_{r}$ 을 곱해요.',
     ],
     cats: {
+      'transfer-bayes': 'calc',
       'bayes-word': 'word',
       'trial-word': 'word',
       'cond-table': 'word',
@@ -68,6 +72,7 @@ export const META: MetaMap = {
       '확률질량함수의 미정계수를 구할 때 확률의 합이 $1$ 이라는 조건을 쓰지 않아요 → 모든 $P(X=x)$ 를 더해 $1$ 로 놓아요.',
     ],
     cats: {
+      'var-from-conditions': 'calc',
       'expect-word': 'word',
       'binom-word': 'word',
       'pmf-unknown': 'calc',
@@ -84,6 +89,7 @@ export const META: MetaMap = {
       '이항분포를 정규근사할 때 분산 $npq$ 를 표준편차로 그대로 써요 → 표준편차는 $\\sqrt{npq}$ 예요.',
     ],
     cats: {
+      'normal-two-equal': 'calc',
       'normal-word': 'word',
       'approx-word': 'word',
       pdf: 'calc',
@@ -100,6 +106,7 @@ export const META: MetaMap = {
       '표본의 크기를 4배로 하면 신뢰구간 길이도 $\\frac{1}{4}$ 이 된다고 해요 → 길이는 $\\frac{1}{\\sqrt{n}}$ 에 비례하니 $\\frac{1}{2}$ 이 돼요.',
     ],
     cats: {
+      'xbar-min-n': 'calc',
       'estimate-word': 'word',
       'sample-mean': 'calc',
       'xbar-prob': 'calc',
@@ -117,6 +124,7 @@ export const META: MetaMap = {
       '$\\sqrt{n^{2}+5n}-n$ 을 $\\infty-\\infty=0$ 으로 처리해요 → 분자를 유리화하면 $\\frac{5n}{\\sqrt{n^{2}+5n}+n}\\to\\frac{5}{2}$ 예요.',
     ],
     cats: {
+      'squeeze-limit': 'calc',
       rational: 'calc',
       'sqrt-diff': 'calc',
       geometric: 'calc',
@@ -131,6 +139,7 @@ export const META: MetaMap = {
       '공이 튀어 오르는 거리의 합에서 처음 떨어진 높이까지 2배 해요 → 처음 낙하는 한 번, 그 뒤 오르내림은 각각 2번씩 더해요.',
     ],
     cats: {
+      'geo-series-cond': 'calc',
       'series-word': 'word',
       telescope: 'calc',
       'geo-series': 'calc',
@@ -146,6 +155,7 @@ export const META: MetaMap = {
       '삼각함수 극한에서 각을 도($^{\\circ}$) 단위로 생각해요 → $\\lim\\frac{\\sin x}{x}=1$ 은 호도법일 때만 성립해요.',
     ],
     cats: {
+      'lim-undetermined-exp': 'calc',
       'growth-word': 'word',
       'lim-e': 'calc',
       'lim-explog': 'calc',
@@ -162,6 +172,7 @@ export const META: MetaMap = {
       '역함수 미분 $g\'(b)$ 를 $\\frac{1}{f\'(b)}$ 로 계산해요 → $f(a)=b$ 인 $a$ 를 먼저 찾아 $\\frac{1}{f\'(a)}$ 예요.',
     ],
     cats: {
+      'inverse-cond': 'calc',
       'related-rates': 'word',
       quotient: 'calc',
       chain: 'calc',
@@ -178,6 +189,7 @@ export const META: MetaMap = {
       '$(x^{2}+ax+b)e^{x}$ 를 미분할 때 $e^{x}$ 만 미분해요 → 곱의 미분으로 $(x^{2}+(a+2)x+a+b)e^{x}$ 가 돼요.',
     ],
     cats: {
+      'exp-poly-extreme': 'calc',
       'optimize-trans': 'word',
       'motion-curve': 'word',
       tangent: 'calc',
@@ -194,6 +206,7 @@ export const META: MetaMap = {
       '부분적분에서 미분할 함수와 적분할 함수를 거꾸로 골라 식이 더 복잡해져요 → 로그·다항식은 미분, 지수·삼각함수는 적분 쪽으로 둬요.',
     ],
     cats: {
+      'inverse-integral': 'calc',
       'integral-word': 'word',
       antideriv: 'calc',
       'definite-basic': 'calc',
@@ -209,6 +222,7 @@ export const META: MetaMap = {
       '곡선의 길이를 $\\int\\sqrt{1+y\'}dx$ 로 써요 → 도함수를 제곱해 $\\int\\sqrt{1+(y\')^{2}}dx$ 예요.',
     ],
     cats: {
+      'area-exp': 'calc',
       'volume-word': 'word',
       'motion-word': 'word',
       riemann: 'calc',
@@ -227,6 +241,7 @@ export const META: MetaMap = {
       '$\\frac{x^{2}}{64}+\\frac{y^{2}}{289}=1$ 의 초점을 $x$ 축 위에 놓아요 → 분모가 큰 쪽이 장축이라 초점이 $y$ 축 위에 있어요.',
     ],
     cats: {
+      'focal-triangle': 'calc',
       'conic-word': 'word',
       parabola: 'calc',
       ellipse: 'calc',
@@ -242,6 +257,7 @@ export const META: MetaMap = {
       '기울기가 $m$ 인 접선을 하나만 구해요 → 타원·쌍곡선에는 기울기가 같은 접선이 두 개라 $y$ 절편의 $\\pm$ 두 값을 모두 확인해요.',
     ],
     cats: {
+      'chord-midpoint': 'calc',
       position: 'calc',
       'tangent-point': 'calc',
       'slope-tangent': 'calc',
@@ -256,6 +272,7 @@ export const META: MetaMap = {
       '평행사변형 ABCD 의 D 를 $\\vec b+\\vec c-\\vec a$ 로 구해요 → 대각선 AC, BD 의 중점이 같으므로 $\\vec d=\\vec a+\\vec c-\\vec b$ 예요.',
     ],
     cats: {
+      'vector-area-ratio': 'calc',
       'force-word': 'word',
       components: 'calc',
       magnitude: 'calc',
@@ -271,6 +288,7 @@ export const META: MetaMap = {
       '두 직선이 이루는 각을 방향벡터 내적으로 구하면서 둔각을 그대로 써요 → 직선 사이 각은 예각이라 $\\cos\\theta=\\frac{|\\vec u\\cdot\\vec v|}{|\\vec u||\\vec v|}$ 예요.',
     ],
     cats: {
+      'dot-in-figure': 'calc',
       'work-word': 'word',
       'dot-comp': 'calc',
       'dot-angle': 'calc',
@@ -287,6 +305,7 @@ export const META: MetaMap = {
       '구와 $xy$ 평면이 만나는 원의 반지름을 구의 반지름 그대로 써요 → 중심의 $z$ 좌표가 거리 $d$ 이므로 $\\sqrt{r^{2}-d^{2}}$ 예요.',
     ],
     cats: {
+      'projection-area': 'calc',
       'space-word': 'word',
       'solid-lines': 'concept',
       distance3: 'calc',

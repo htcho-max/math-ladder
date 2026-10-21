@@ -390,10 +390,13 @@ function apply(g: Gain, starUnitId?: string): number {
 /** 연습 문제 하나 채점 후 (recordAnswer 다음에 호출). 반환: 이번에 얻은 XP */
 /** 힌트를 단계별로 볼수록 정답 XP 가 줄어듦 */
 export const HINT_XP = [1, 0.8, 0.6, 0.5];
+/** 단계별 정답 XP: 기본·보통·심화·최상위 */
+export const LEVEL_XP = [10, 15, 20, 30];
+export const LEVEL_NAME = ['기본', '보통', '심화', '최상위'];
 
 export function rewardAnswer(p: Problem, ok: boolean, o: { combo: number; review: boolean; newUnit: boolean; hints?: number; twin?: boolean }): number {
-  const base = ok ? Math.round([10, 15, 20][p.level - 1] * HINT_XP[Math.min(3, o.hints ?? 0)]) : 2;
-  return apply({ xp: base, correct: ok, answered: true, hard: ok && p.level === 3 && !o.hints, review: o.review, combo: o.combo, newUnit: o.newUnit, twin: ok && o.twin }, p.unitId);
+  const base = ok ? Math.round(LEVEL_XP[p.level - 1] * HINT_XP[Math.min(3, o.hints ?? 0)]) : 2;
+  return apply({ xp: base, correct: ok, answered: true, hard: ok && p.level >= 3 && !o.hints, review: o.review, combo: o.combo, newUnit: o.newUnit, twin: ok && o.twin }, p.unitId);
 }
 
 /** 수준 진단에서 맞힌 단원을 별 1개(숙련도 50) 상태로 인증 */

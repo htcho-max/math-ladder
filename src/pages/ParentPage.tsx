@@ -3,7 +3,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { CONTENT } from '../content';
 import { COURSE_BY_ID, UNIT_BY_ID, unitLabel } from '../core/curriculum';
 import { answerText } from '../core/check';
-import { problemFromKey } from '../core/problem';
+import { problemFromKey, getSkill } from '../core/problem';
 import { pitfalls } from '../content/meta';
 import { unitMastery, unitAttempted } from '../lib/mastery';
 import { levelInfo, rwOf, streakDays } from '../lib/reward';
@@ -453,7 +453,7 @@ function Report() {
 function WrongSample({ unitId, skillId, cnt, probKey }: { unitId: string; skillId: string; cnt: number; probKey: string }) {
   const [open, setOpen] = useState(false);
   const p = problemFromKey(probKey);
-  const sk = CONTENT[unitId]?.skills.find((x) => x.id === skillId);
+  const sk = getSkill(unitId, skillId);
   return (
     <div className="wsample">
       <div className="ws-h">

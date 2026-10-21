@@ -35,7 +35,10 @@ export function factorize(n: number): [number, number][] {
 }
 /** 부동소수 오차 정리: round(0.1+0.2, 10) = 0.3 */
 export function round(x: number, places = 10): number {
-  const f = 10 ** places;
+  if (Number.isInteger(x)) return Object.is(x, -0) ? 0 : x;
+  // 큰 수에 10^10 을 곱하면 부동소수 오차가 생김 → 유효숫자 15자리 안에서만 반올림
+  const p = Math.max(0, Math.min(places, 15 - Math.ceil(Math.log10(Math.abs(x) + 1))));
+  const f = 10 ** p;
   const r = Math.round(x * f) / f;
   return Object.is(r, -0) ? 0 : r;
 }

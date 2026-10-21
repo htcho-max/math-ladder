@@ -98,15 +98,16 @@ for (const [group, courses] of Object.entries(GROUPS)) {
           }
         });
         expect(c.skills.length, `${u.id} 유형 3개 이상`).toBeGreaterThanOrEqual(3);
-        const ids = c.skills.map((s) => s.id);
-        expect(new Set(ids).size, `${u.id} skill id 중복`).toBe(ids.length);
-        for (const sk of c.skills) {
+        const ids = [...c.skills, ...(c.top ?? [])].map((s) => s.id);
+        expect(new Set(ids).size, `${u.id} skill id 중복 (top 포함)`).toBe(ids.length);
+        const all = [...c.skills.map((sk) => ({ sk, levels: [1, 2, 3] as Level[] })), ...(c.top ?? []).map((sk) => ({ sk, levels: [4] as Level[] }))];
+        for (const { sk, levels } of all) {
           expect(/^[a-z0-9-]+$/.test(sk.id), `${u.id} skill id 형식 ${sk.id}`).toBe(true);
-          for (const level of [1, 2, 3] as Level[]) {
+          for (const level of levels) {
             const qs = new Set<string>();
             for (let seed = 1; seed <= SEEDS; seed++) {
               const where = `${u.id}/${sk.id} L${level} seed${seed}`;
-              const mk = () => polish(sk.gen(new Rng(seed ^ hashStr(`${u.id}/${sk.id}`)), level), u.id);
+              const mk = () => polish(sk.gen(new Rng(seed ^ hashStr(`${u.id}/${sk.id}`)), Math.min(level, 3) as 1 | 2 | 3), u.id);
               let d: ProblemDraft;
               try {
                 d = mk();

@@ -309,3 +309,15 @@ describe('Gemini 모델이 닫혔을 때', () => {
     expect(getState().settings.geminiModel).toBe('gemini-9.9-flash-lite');
   });
 });
+
+import { round as nround } from '../src/core/nt';
+describe('round', () => {
+  it('큰 정수·소수 오차 없음', () => {
+    expect(nround(1024563789)).toBe(1024563789);
+    expect(nround(1024563789.0000001)).toBe(1024563789);
+    expect(nround(0.1 + 0.2)).toBe(0.3);
+    expect(nround(-0.0000000000001)).toBe(0);
+    expect(nround(2.125, 2)).toBe(2.13);
+    expect(String(nround(123456789012.5))).toBe('123456789012.5');
+  });
+});
