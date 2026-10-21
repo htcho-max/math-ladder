@@ -16,7 +16,7 @@ import {
 import { Header } from '../ui/bits';
 import { navigate } from '../lib/router';
 import { todayDaily, buildDaily, saveDaily } from '../lib/daily';
-import { getState, dayKey as dk } from '../lib/store';
+import { getState, dayKey as dk, DEFAULT_MODEL } from '../lib/store';
 
 function CourseSelect({ value, onChange }: { value: string; onChange: (v: string) => void }) {
   return (
@@ -133,7 +133,7 @@ export function SettingsPage({ parent = false }: { parent?: boolean }) {
         </label>
         <label className="frow">
           <span>모델</span>
-          <input type="text" value={s.settings.geminiModel} onChange={(e) => updateSettings({ geminiModel: e.target.value.trim() || 'gemini-2.5-flash-lite' })} />
+          <input type="text" value={s.settings.geminiModel} onChange={(e) => updateSettings({ geminiModel: e.target.value.trim() || DEFAULT_MODEL })} />
         </label>
       </section>
       )}

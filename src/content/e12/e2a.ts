@@ -1,5 +1,6 @@
 // 초2-1: 세 자리 수 / 여러 가지 도형 / 덧셈과 뺄셈 / 길이 재기 / 분류하기 / 곱셈
 import type { ContentMap } from '../../core/types';
+import { WORDS_2 } from './words2';
 import type { Rng } from '../../core/rng';
 import { makeChoices } from '../../core/tex';
 import { range } from '../../core/nt';
@@ -1286,3 +1287,5 @@ export const e2a: ContentMap = {
   },
 };
 
+// 문장제 유형 덧붙이기 (words*.ts)
+for (const [id, sks] of Object.entries(WORDS_2)) if (e2a[id]) e2a[id].skills.push(...sks);

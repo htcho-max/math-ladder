@@ -7,6 +7,7 @@ import { comma, makeChoices, numChoices } from '../../core/tex';
 import { numberLine, regularPolygon, Svg } from '../../core/fig';
 import { pickName, pickNames, nj, josa, reduceTex, fracAns, intAns, decAns, ft, mt, properFrac, dt, mkDec, p10, fj, fro } from './util';
 import { cuboidFig, gridNetFig, multiShapeFig, rectNetFig, shapeFig, P } from './fig56';
+import { WORD5 } from './words5';
 
 // ───────────── 어림하기 ─────────────
 type Mode = '올림' | '버림' | '반올림';
@@ -1514,3 +1515,6 @@ export const content: ContentMap = {
   },
 };
 
+
+// 문장제 추가 유형 (words5.ts) — 기존 유형 뒤에 덧붙임 (기존 id·순서 유지)
+for (const [u, sks] of Object.entries(WORD5)) content[u]?.skills.push(...sks);

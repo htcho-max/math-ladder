@@ -1,5 +1,6 @@
 // 초2-2: 네 자리 수 / 곱셈구구 / 길이 재기 / 시각과 시간 / 표와 그래프 / 규칙 찾기
 import type { ContentMap } from '../../core/types';
+import { WORDS_2 } from './words2';
 import type { Rng } from '../../core/rng';
 import { makeChoices } from '../../core/tex';
 import { range } from '../../core/nt';
@@ -1357,3 +1358,6 @@ export const e2b: ContentMap = {
     ],
   },
 };
+
+// 문장제 유형 덧붙이기 (words*.ts)
+for (const [id, sks] of Object.entries(WORDS_2)) if (e2b[id]) e2b[id].skills.push(...sks);

@@ -6,6 +6,7 @@ import { poly, termsTex } from '../../core/tex';
 import { Plane } from '../../core/fig';
 import { P, absInt, cv, figOut, pDef, pDer, pEval, pInt, pMul, pRoots, pSub, pfn, pt, tch, wch, xm } from './util';
 import type { P as Poly } from './util';
+import { CAL1_WORD } from './word-cal1';
 
 const pp = (p: Poly, v = 'x') => poly(p, v);
 const fv = (p: Poly, x: number) => pEval(p, x);
@@ -1574,3 +1575,6 @@ export const cal1: ContentMap = {
     ],
   },
 };
+
+// 활용(문장제) 유형 덧붙이기
+for (const [u, sk] of Object.entries(CAL1_WORD)) cal1[u].skills.push(...sk);

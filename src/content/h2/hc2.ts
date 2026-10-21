@@ -5,6 +5,7 @@ import { gcd, divisors, isPrime, factorial, nPr, range } from '../../core/nt';
 import { poly, sqrtTex, termsTex } from '../../core/tex';
 import { Plane } from '../../core/fig';
 import { L, cv, figOut, josa, texJosa, circleTex, lineTex, pt, setTex, sqTerm, tch, wch, xm, yEq } from './util';
+import { HC2_WORD } from './word-hc2';
 
 const TRIPLES: [number, number, number][] = [
   [3, 4, 5],
@@ -1619,3 +1620,6 @@ export const hc2: ContentMap = {
 function paren(n: number): string {
   return n < 0 ? `(${n})` : String(n);
 }
+
+// 활용(문장제) 유형 덧붙이기
+for (const [u, sk] of Object.entries(HC2_WORD)) hc2[u].skills.push(...sk);

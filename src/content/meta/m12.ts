@@ -9,7 +9,7 @@ export const META: MetaMap = {
       '소인수분해를 $12=3\\times4$ 처럼 멈춰요 → 모든 인수가 소수가 될 때까지 나눠 $2^2\\times3$ 으로 써요.',
       '약수의 개수를 지수끼리 곱해요: $2^2\\times3$ → $2\\times1$ → 각 지수에 $1$ 을 더해 곱해서 $(2+1)(1+1)=6$ 개예요.',
     ],
-    cats: { prime: 'concept', factorize: 'calc', 'divisor-count': 'calc', 'gcd-lcm': 'calc' },
+    cats: { prime: 'concept', factorize: 'calc', 'divisor-count': 'calc', 'gcd-lcm': 'calc', 'gcd-word': 'word', 'lcm-word': 'word' },
   },
   'm1a-2': {
     pitfalls: [
@@ -17,7 +17,7 @@ export const META: MetaMap = {
       '$-3^2$ 과 $(-3)^2$ 을 같게 계산해요 → $-3^2=-9$, $(-3)^2=9$ 예요. 괄호가 없으면 $3$ 만 제곱해요.',
       '빼기를 더하기로 바꿀 때 부호를 그대로 둬요: $5-(-3)=2$ → 빼는 수의 부호를 바꿔 $5+(+3)=8$ 이에요.',
     ],
-    cats: { order: 'concept', 'count-int': 'concept', 'add-sub': 'calc', 'mul-div': 'calc', mixed: 'calc', word: 'word' },
+    cats: { order: 'concept', 'count-int': 'concept', 'add-sub': 'calc', 'mul-div': 'calc', mixed: 'calc', word: 'word', 'real-life': 'word' },
   },
   'm1a-3': {
     pitfalls: [
@@ -25,7 +25,7 @@ export const META: MetaMap = {
       '분수 꼴 식을 뺄 때 분자 전체에 빼기를 적용하지 않아요 → $-\\frac{x-2}{3}=\\frac{-x+2}{3}$ 처럼 분자를 괄호로 묶어 계산해요.',
       '음수를 대입할 때 괄호를 빠뜨려요: $x=-2$ 일 때 $x^2=-4$ → $(-2)^2=4$ 처럼 괄호를 씌워 대입해요.',
     ],
-    cats: { 'omit-sign': 'concept', 'expr-value': 'calc', terms: 'concept', simplify: 'calc', 'word-expr': 'word' },
+    cats: { 'omit-sign': 'concept', 'expr-value': 'calc', terms: 'concept', simplify: 'calc', 'word-expr': 'word', 'formula-word': 'word' },
   },
   'm1a-4': {
     pitfalls: [
@@ -33,7 +33,7 @@ export const META: MetaMap = {
       '계수가 분수인 방정식에서 한쪽 항에만 분모의 최소공배수를 곱해요 → 양변의 모든 항(상수항 포함)에 곱해요.',
       '거리·속력 문제에서 단위를 맞추지 않아요: 분과 시속을 섞어 써요 → 시간은 시간(h), 거리는 km 처럼 단위를 통일해요.',
     ],
-    cats: { identity: 'concept', solve: 'calc', param: 'calc', 'word-number': 'word', 'word-speed': 'word' },
+    cats: { identity: 'concept', solve: 'calc', param: 'calc', 'word-number': 'word', 'word-speed': 'word', 'word-work': 'word' },
   },
   'm1a-5': {
     pitfalls: [
@@ -41,7 +41,7 @@ export const META: MetaMap = {
       '축 위의 점도 어느 사분면에 속한다고 해요 → $x$축·$y$축 위의 점은 어느 사분면에도 속하지 않아요.',
       '반비례를 "$x$ 가 커지면 $y$ 가 작아지는 관계"로만 판단해요 → $xy$ 가 일정할 때, 즉 $y=\\frac{a}{x}$ 꼴일 때만 반비례예요.',
     ],
-    cats: { coord: 'concept', quadrant: 'concept', direct: 'calc', inverse: 'calc', 'prop-word': 'word' },
+    cats: { coord: 'concept', quadrant: 'concept', direct: 'calc', inverse: 'calc', 'prop-word': 'word', 'two-people': 'word' },
   },
   // ───────── 중1-2 ─────────
   'm1b-1': {
@@ -50,7 +50,7 @@ export const META: MetaMap = {
       '꼬인 위치를 평면에서도 찾아요 → 꼬인 위치는 공간에서 만나지도 평행하지도 않은 두 직선이에요.',
       '평행선 사이에 꺾인 선이 있을 때 각을 그냥 더해요 → 꺾인 점을 지나는 평행선을 하나 더 그어 엇각으로 나눠 구해요.',
     ],
-    cats: { 'count-lines': 'concept', midpoint: 'calc', 'vertical-angle': 'calc', parallel: 'calc', position: 'concept' },
+    cats: { 'count-lines': 'concept', midpoint: 'calc', 'vertical-angle': 'calc', parallel: 'calc', position: 'concept', 'clock-angle': 'word', 'angle-ratio': 'word' },
   },
   'm1b-2': {
     pitfalls: [
@@ -64,6 +64,8 @@ export const META: MetaMap = {
       determined: 'concept',
       congruent: 'concept',
       'congruence-condition': 'concept',
+      'congruence-apply': 'word',
+      'perimeter-triangle': 'word',
     },
   },
   'm1b-3': {
@@ -72,7 +74,7 @@ export const META: MetaMap = {
       '외각의 합도 $n$ 에 따라 커진다고 생각해요 → 다각형의 외각의 합은 항상 $360^\\circ$ 예요.',
       '부채꼴의 넓이에 $\\pi r^2$ 대신 $2\\pi r$ 을 써요 → 넓이는 $\\pi r^2\\times\\frac{x}{360}$, 호의 길이는 $2\\pi r\\times\\frac{x}{360}$ 이에요.',
     ],
-    cats: { diagonals: 'calc', 'angle-sum': 'calc', 'triangle-angle': 'calc', 'polygon-angle': 'calc', sector: 'calc' },
+    cats: { diagonals: 'calc', 'angle-sum': 'calc', 'triangle-angle': 'calc', 'polygon-angle': 'calc', sector: 'calc', 'polygon-word': 'word', 'sector-word': 'word' },
   },
   'm1b-4': {
     pitfalls: [
@@ -80,7 +82,7 @@ export const META: MetaMap = {
       '구의 겉넓이와 부피 공식을 섞어 써요 → 겉넓이는 $4\\pi r^2$, 부피는 $\\frac{4}{3}\\pi r^3$ 이에요.',
       '각뿔의 겉넓이에서 옆면 삼각형의 높이 대신 각뿔의 높이를 써요 → 옆면은 그 삼각형 자체의 높이로 넓이를 구해요.',
     ],
-    cats: { polyhedron: 'concept', regular: 'concept', rotation: 'concept', prism: 'calc', 'cone-sphere': 'calc' },
+    cats: { polyhedron: 'concept', regular: 'concept', rotation: 'concept', prism: 'calc', 'cone-sphere': 'calc', 'water-tank': 'word', recast: 'word' },
   },
   'm1b-5': {
     pitfalls: [
@@ -88,7 +90,7 @@ export const META: MetaMap = {
       '자료 개수가 짝수일 때 가운데 두 값 중 하나를 골라요 → 가운데 두 값의 평균이 중앙값이에요.',
       '상대도수를 백분율로 착각해 합이 $100$ 이라고 해요 → 상대도수는 (도수) $\\div$ (전체 도수) 이고 합은 $1$ 이에요.',
     ],
-    cats: { 'median-mode': 'calc', mean: 'calc', 'stem-leaf': 'calc', 'freq-table': 'calc', histogram: 'calc', relative: 'calc' },
+    cats: { 'median-mode': 'calc', mean: 'calc', 'stem-leaf': 'calc', 'freq-table': 'calc', histogram: 'calc', relative: 'calc', 'rep-value-word': 'word', 'freq-word': 'word' },
   },
   // ───────── 중2-1 ─────────
   'm2a-1': {
@@ -97,7 +99,7 @@ export const META: MetaMap = {
       '$0.1\\dot{2}$ 를 $\\frac{12}{99}$ 로 바꿔요 → 순환하지 않는 부분이 있으면 $\\frac{12-1}{90}=\\frac{11}{90}$ 이에요.',
       '순환소수는 유리수가 아니라고 생각해요 → 순환소수는 모두 분수로 나타낼 수 있으므로 유리수예요.',
     ],
-    cats: { finite: 'concept', notation: 'concept', 'to-fraction': 'calc', 'rep-calc': 'calc', classify: 'concept' },
+    cats: { finite: 'concept', notation: 'concept', 'to-fraction': 'calc', 'rep-calc': 'calc', classify: 'concept', misread: 'word', 'finite-word': 'word' },
   },
   'm2a-2': {
     pitfalls: [
@@ -105,7 +107,7 @@ export const META: MetaMap = {
       '같은 밑의 곱에서 지수를 곱해요: $a^2\\times a^3=a^6$ → 지수끼리 더해서 $a^5$ 예요.',
       '괄호 앞이 빼기일 때 뒤 항의 부호를 안 바꿔요: $-(3x-2y)=-3x-2y$ → 모든 항의 부호를 바꿔 $-3x+2y$ 예요.',
     ],
-    cats: { 'exp-law': 'calc', mono: 'calc', 'poly-addsub': 'calc', 'mono-poly': 'calc', substitute: 'calc' },
+    cats: { 'exp-law': 'calc', mono: 'calc', 'poly-addsub': 'calc', 'mono-poly': 'calc', substitute: 'calc', 'shape-expr': 'word', 'exp-word': 'word' },
   },
   'm2a-3': {
     pitfalls: [
@@ -113,7 +115,7 @@ export const META: MetaMap = {
       '수직선에서 $\\le$ 와 $<$ 를 같은 점으로 그려요 → 등호가 있으면 색칠한 점(●), 없으면 빈 점(○)이에요.',
       '"최대 몇 개"를 구할 때 해를 반올림해요 → 부등식을 만족하는 가장 큰 자연수를 골라야 해요.',
     ],
-    cats: { property: 'concept', solve: 'calc', 'number-line': 'concept', 'integer-sol': 'calc', word: 'word' },
+    cats: { property: 'concept', solve: 'calc', 'number-line': 'concept', 'integer-sol': 'calc', word: 'word', 'word-plan': 'word' },
   },
   'm2a-4': {
     pitfalls: [
@@ -121,7 +123,7 @@ export const META: MetaMap = {
       '한 문자의 값만 구하고 멈춰요 → 구한 값을 한 식에 대입해 나머지 문자도 구하고, 두 식에 모두 맞는지 확인해요.',
       '해가 무수히 많은 경우와 없는 경우를 헷갈려요 → 두 식의 계수비가 상수항까지 같으면 무수히 많고, 상수항만 다르면 해가 없어요.',
     ],
-    cats: { solution: 'calc', solve: 'calc', param: 'calc', special: 'concept', word: 'word' },
+    cats: { solution: 'calc', solve: 'calc', param: 'calc', special: 'concept', word: 'word', 'word-mix': 'word' },
   },
   'm2a-5': {
     pitfalls: [
@@ -129,7 +131,7 @@ export const META: MetaMap = {
       '$x$절편과 $y$절편을 바꿔 구해요 → $x$절편은 $y=0$ 을 대입한 $x$ 값, $y$절편은 $x=0$ 을 대입한 $y$ 값이에요.',
       '$y$축 방향으로 평행이동할 때 기울기도 바꿔요 → 평행이동하면 기울기는 그대로이고 $y$절편만 바뀌어요.',
     ],
-    cats: { value: 'calc', intercept: 'calc', slope: 'calc', translate: 'calc', graph: 'concept', equation: 'calc' },
+    cats: { value: 'calc', intercept: 'calc', slope: 'calc', translate: 'calc', graph: 'concept', equation: 'calc', 'change-word': 'word', 'fee-word': 'word' },
   },
   'm2a-6': {
     pitfalls: [
@@ -137,6 +139,6 @@ export const META: MetaMap = {
       '일차방정식을 $y=$ 꼴로 바꿀 때 부호를 놓쳐요: $2x-y=4 \\Rightarrow y=2x+4$ → 이항하면 $y=2x-4$ 예요.',
       '기울기가 같으면 무조건 평행이라고 해요 → 기울기와 $y$절편이 모두 같으면 일치(해가 무수히 많음), 절편만 다르면 평행이에요.',
     ],
-    cats: { 'eq-graph': 'calc', 'axis-line': 'concept', intersect: 'calc', position: 'concept', area: 'calc', apply: 'word' },
+    cats: { 'eq-graph': 'calc', 'axis-line': 'concept', intersect: 'calc', position: 'concept', area: 'calc', apply: 'word', 'meet-graph': 'word' },
   },
 };

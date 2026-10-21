@@ -7,6 +7,7 @@ import { comma, makeChoices, numChoices } from '../../core/tex';
 import { regularPolygon, Svg } from '../../core/fig';
 import { pickName, josa, jo, nj, fracAns, intAns, decAns, ft, mt, properFrac, reduceTex, dt, mkDec, ro, fj } from './util';
 import { cuboidFig, prismFig, bandFig, pieFig, pictureFig } from './fig56';
+import { WORD6 } from './words6';
 
 const POLY = ['', '', '', '삼각', '사각', '오각', '육각', '칠각', '팔각', '구각', '십각'];
 
@@ -1207,3 +1208,6 @@ function jo2(w: string): string {
   return ch >= 0xac00 && ch <= 0xd7a3 && (ch - 0xac00) % 28 !== 0 ? '과' : '와';
 }
 
+
+// 문장제 추가 유형 (words6.ts) — 기존 유형 뒤에 덧붙임 (기존 id·순서 유지)
+for (const [u, sks] of Object.entries(WORD6)) content[u]?.skills.push(...sks);

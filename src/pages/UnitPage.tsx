@@ -37,12 +37,15 @@ export function UnitPage({ id }: { id: string }) {
             {c && <Stars n={starsFor(m)} />}
           </div>
         </div>
-        {c && <div className="muted small starhelp">숙련도 50 → ★, 80 → ★★, 95 → ★★★ · 심화 문제를 맞혀야 별 세 개를 받을 수 있어요</div>}
+        {c && <div className="muted small starhelp">숙련도 50 → ★, 80 → ★★, 95 → ★★★ · 연습에서 2문제 연속으로 맞히면 다음 문제가 한 단계 어려워지고(기본 → 보통 → 심화), '심화 도전'은 처음부터 심화만 나와요. 별 세 개는 심화 문제를 맞혀야 받을 수 있어요</div>}
         {c && isLocked(d, id, settings) && <div className="lock-note">🔒 잠김 · 먼저 배울 단원을 마치면 연습할 수 있어요 (시험은 볼 수 있어요)</div>}
         {c && (
           <div className="btnrow">
             <button className="btn primary" disabled={isLocked(d, id, settings)} onClick={() => navigate(`/practice/u/${id}`)}>
               단원 전체 연습
+            </button>
+            <button className="btn" disabled={isLocked(d, id, settings)} onClick={() => navigate(`/practice/h/${id}`)} title="처음부터 심화 문제만 10개">
+              🔥 심화 도전
             </button>
             <button className="btn" onClick={() => navigate(`/exam/new/unit/${id}`)}>
               단원평가

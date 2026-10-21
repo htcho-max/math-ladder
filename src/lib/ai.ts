@@ -2,14 +2,30 @@
 import { answerText } from '../core/check';
 import { COURSE_BY_ID } from '../core/curriculum';
 import type { Problem } from '../core/types';
-import type { EssayItem } from './store';
+import { DEFAULT_MODEL, updateSettings, type EssayItem } from './store';
 
 export interface ChatMsg {
   role: 'user' | 'model';
   text: string;
 }
 
+/** 모델이 닫혔다는 404 면 구글이 알려 준 새 모델(또는 기본 모델)로 한 번 다시 시도하고 설정도 바꿈 */
 async function call(key: string, model: string, text: string | ChatMsg[], json = false, system?: string): Promise<string> {
+  try {
+    return await call1(key, model, text, json, system);
+  } catch (e) {
+    const m = String((e as Error).message);
+    if (!/^AI 요청 실패: 404/.test(m)) throw e;
+    const hint = m.match(/use (?:models\/)?(gemini-[\w.-]+)/i)?.[1]?.replace(/\.+$/, '');
+    const next = hint && hint !== model ? hint : model !== DEFAULT_MODEL ? DEFAULT_MODEL : null;
+    if (!next) throw e;
+    const out = await call1(key, next, text, json, system);
+    updateSettings({ geminiModel: next });
+    return out;
+  }
+}
+
+async function call1(key: string, model: string, text: string | ChatMsg[], json = false, system?: string): Promise<string> {
   const url = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent?key=${encodeURIComponent(key)}`;
   const res = await fetch(url, {
     method: 'POST',

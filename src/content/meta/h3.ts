@@ -37,6 +37,7 @@ export const META: MetaMap = {
       '$P(A\\cup B)=P(A)+P(B)$ 로 계산해요 → 배반이 아니면 $P(A\\cap B)$ 를 한 번 빼야 해요.',
     ],
     cats: {
+      'prob-word': 'word',
       dice: 'calc',
       draw: 'calc',
       'add-rule': 'calc',
@@ -51,6 +52,8 @@ export const META: MetaMap = {
       '독립시행 확률에서 ${}_{n}\\mathrm{C}_{r}$ 을 빠뜨려 $p^{r}(1-p)^{n-r}$ 만 써요 → 성공하는 $r$ 번의 위치를 고르는 경우 ${}_{n}\\mathrm{C}_{r}$ 을 곱해요.',
     ],
     cats: {
+      'bayes-word': 'word',
+      'trial-word': 'word',
       'cond-table': 'word',
       'cond-formula': 'calc',
       multiply: 'calc',
@@ -65,6 +68,8 @@ export const META: MetaMap = {
       '확률질량함수의 미정계수를 구할 때 확률의 합이 $1$ 이라는 조건을 쓰지 않아요 → 모든 $P(X=x)$ 를 더해 $1$ 로 놓아요.',
     ],
     cats: {
+      'expect-word': 'word',
+      'binom-word': 'word',
       'pmf-unknown': 'calc',
       'expect-var': 'calc',
       linear: 'calc',
@@ -79,6 +84,8 @@ export const META: MetaMap = {
       '이항분포를 정규근사할 때 분산 $npq$ 를 표준편차로 그대로 써요 → 표준편차는 $\\sqrt{npq}$ 예요.',
     ],
     cats: {
+      'normal-word': 'word',
+      'approx-word': 'word',
       pdf: 'calc',
       standardize: 'calc',
       symmetry: 'concept',
@@ -93,6 +100,7 @@ export const META: MetaMap = {
       '표본의 크기를 4배로 하면 신뢰구간 길이도 $\\frac{1}{4}$ 이 된다고 해요 → 길이는 $\\frac{1}{\\sqrt{n}}$ 에 비례하니 $\\frac{1}{2}$ 이 돼요.',
     ],
     cats: {
+      'estimate-word': 'word',
       'sample-mean': 'calc',
       'xbar-prob': 'calc',
       ci: 'calc',
@@ -123,6 +131,7 @@ export const META: MetaMap = {
       '공이 튀어 오르는 거리의 합에서 처음 떨어진 높이까지 2배 해요 → 처음 낙하는 한 번, 그 뒤 오르내림은 각각 2번씩 더해요.',
     ],
     cats: {
+      'series-word': 'word',
       telescope: 'calc',
       'geo-series': 'calc',
       'term-limit': 'concept',
@@ -137,6 +146,7 @@ export const META: MetaMap = {
       '삼각함수 극한에서 각을 도($^{\\circ}$) 단위로 생각해요 → $\\lim\\frac{\\sin x}{x}=1$ 은 호도법일 때만 성립해요.',
     ],
     cats: {
+      'growth-word': 'word',
       'lim-e': 'calc',
       'lim-explog': 'calc',
       'lim-trig': 'calc',
@@ -152,6 +162,7 @@ export const META: MetaMap = {
       '역함수 미분 $g\'(b)$ 를 $\\frac{1}{f\'(b)}$ 로 계산해요 → $f(a)=b$ 인 $a$ 를 먼저 찾아 $\\frac{1}{f\'(a)}$ 예요.',
     ],
     cats: {
+      'related-rates': 'word',
       quotient: 'calc',
       chain: 'calc',
       parametric: 'calc',
@@ -167,6 +178,8 @@ export const META: MetaMap = {
       '$(x^{2}+ax+b)e^{x}$ 를 미분할 때 $e^{x}$ 만 미분해요 → 곱의 미분으로 $(x^{2}+(a+2)x+a+b)e^{x}$ 가 돼요.',
     ],
     cats: {
+      'optimize-trans': 'word',
+      'motion-curve': 'word',
       tangent: 'calc',
       extremum: 'calc',
       inflection: 'calc',
@@ -181,6 +194,7 @@ export const META: MetaMap = {
       '부분적분에서 미분할 함수와 적분할 함수를 거꾸로 골라 식이 더 복잡해져요 → 로그·다항식은 미분, 지수·삼각함수는 적분 쪽으로 둬요.',
     ],
     cats: {
+      'integral-word': 'word',
       antideriv: 'calc',
       'definite-basic': 'calc',
       substitution: 'calc',
@@ -195,6 +209,8 @@ export const META: MetaMap = {
       '곡선의 길이를 $\\int\\sqrt{1+y\'}dx$ 로 써요 → 도함수를 제곱해 $\\int\\sqrt{1+(y\')^{2}}dx$ 예요.',
     ],
     cats: {
+      'volume-word': 'word',
+      'motion-word': 'word',
       riemann: 'calc',
       'riemann-form': 'concept',
       area: 'calc',
@@ -211,6 +227,7 @@ export const META: MetaMap = {
       '$\\frac{x^{2}}{64}+\\frac{y^{2}}{289}=1$ 의 초점을 $x$ 축 위에 놓아요 → 분모가 큰 쪽이 장축이라 초점이 $y$ 축 위에 있어요.',
     ],
     cats: {
+      'conic-word': 'word',
       parabola: 'calc',
       ellipse: 'calc',
       hyperbola: 'calc',
@@ -239,6 +256,7 @@ export const META: MetaMap = {
       '평행사변형 ABCD 의 D 를 $\\vec b+\\vec c-\\vec a$ 로 구해요 → 대각선 AC, BD 의 중점이 같으므로 $\\vec d=\\vec a+\\vec c-\\vec b$ 예요.',
     ],
     cats: {
+      'force-word': 'word',
       components: 'calc',
       magnitude: 'calc',
       parallel: 'calc',
@@ -253,6 +271,7 @@ export const META: MetaMap = {
       '두 직선이 이루는 각을 방향벡터 내적으로 구하면서 둔각을 그대로 써요 → 직선 사이 각은 예각이라 $\\cos\\theta=\\frac{|\\vec u\\cdot\\vec v|}{|\\vec u||\\vec v|}$ 예요.',
     ],
     cats: {
+      'work-word': 'word',
       'dot-comp': 'calc',
       'dot-angle': 'calc',
       angle: 'calc',
@@ -268,6 +287,7 @@ export const META: MetaMap = {
       '구와 $xy$ 평면이 만나는 원의 반지름을 구의 반지름 그대로 써요 → 중심의 $z$ 좌표가 거리 $d$ 이므로 $\\sqrt{r^{2}-d^{2}}$ 예요.',
     ],
     cats: {
+      'space-word': 'word',
       'solid-lines': 'concept',
       distance3: 'calc',
       division3: 'calc',

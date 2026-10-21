@@ -5,6 +5,7 @@ import { Plane, Svg, regularPolygon } from '../../core/fig';
 import { simplifySqrt, gcd } from '../../core/nt';
 import { makeChoices, sqrtTex, linTex, poly, termsTex } from '../../core/tex';
 import { fAns, fChoices, texChoices, TRIPLES, QUADS, coef, shiftSq, deg, stableFig, ro } from './util';
+import { GEO_WORD } from './word-geo';
 
 const fr = (n: number, d = 1) => new F(n, d);
 const T = (f: F) => f.tex();
@@ -1324,3 +1325,6 @@ export const geo: ContentMap = {
   },
 };
 void fChoices;
+
+// 활용(문장제) 유형 덧붙이기
+for (const [u, sk] of Object.entries(GEO_WORD)) geo[u].skills.push(...sk);

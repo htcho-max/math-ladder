@@ -15,13 +15,29 @@ export function rwOf(d: ProfileData): RewardData {
   // 예전 기록이 있으면 경험치를 대략 채워 줌
   let xp = 0;
   for (const v of Object.values(d.days)) xp += v.c * 12 + (v.n - v.c) * 2;
-  return { xp, freezes: 1, frozen: {}, badges: {}, goal: 20, goalDays: {}, questDays: {}, maxCombo: 0, hardCorrect: 0, stars: {}, streakRewarded: 0 };
+  return { xp, curve: 2, freezes: 1, frozen: {}, badges: {}, goal: 20, goalDays: {}, questDays: {}, maxCombo: 0, hardCorrect: 0, stars: {}, streakRewarded: 0 };
 }
 
 // ───────── 레벨 ─────────
-/** 레벨 n → n+1 에 필요한 XP: 100, 150, 200, … */
+/** 레벨 n → n+1 에 필요한 XP: 200, 400, 600, … (v0.8.2 부터. 하루 오늘의 학습 ≈ 400~600 XP)
+ *  Lv3 ≈ 1~2일, Lv5 ≈ 4~5일, Lv10 ≈ 3주, Lv20 ≈ 3달 */
 export function levelNeed(n: number): number {
+  return 200 * n;
+}
+/** 예전 곡선 (100, 150, 200, …) — 옮기기용 */
+function oldNeed(n: number): number {
   return 100 + 50 * (n - 1);
+}
+export const XP_CURVE = 2;
+
+/** 예전 곡선의 XP 를 새 곡선으로: 지금 레벨과 다음 레벨까지 진행 비율은 그대로 */
+export function convertXp(oldXp: number): number {
+  let level = 1,
+    rest = oldXp;
+  while (rest >= oldNeed(level)) rest -= oldNeed(level++);
+  let xp = 0;
+  for (let i = 1; i < level; i++) xp += levelNeed(i);
+  return Math.round(xp + (rest / oldNeed(level)) * levelNeed(level));
 }
 export const TITLES: { from: number; name: string; ic: string }[] = [
   { from: 1, name: '수학 새싹', ic: '🌱' },
@@ -418,6 +434,16 @@ export function rewardExam(score: number, unitIds: string[]): number {
 }
 
 /** 앱 시작 때: 빠진 날을 얼음으로 메우기 (어제까지 이어지던 연속 학습을 지켜 줌) */
+/** 레벨 곡선이 바뀐 뒤 처음 열 때: 레벨은 그대로 두고 XP 만 새 곡선에 맞춤 (프로필마다 한 번) */
+export function migrateXp(): void {
+  const rw = getState().data.rw;
+  if (!rw || (rw.curve ?? 1) >= XP_CURVE) return;
+  updateData((d0) => {
+    const r = rwOf(d0);
+    return { ...d0, rw: { ...r, xp: convertXp(r.xp), curve: XP_CURVE } };
+  });
+}
+
 export function applyFreezes(): void {
   const d = getState().data;
   const rw = rwOf(d);

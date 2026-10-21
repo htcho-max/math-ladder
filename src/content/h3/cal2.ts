@@ -6,6 +6,7 @@ import { Plane } from '../../core/fig';
 import { round } from '../../core/nt';
 import { makeChoices, numChoices, poly, linTex } from '../../core/tex';
 import { fAns, fChoices, texChoices, TRIPLES, coef, stableFig } from './util';
+import { CAL2_WORD } from './word-cal2';
 
 const fr = (n: number, d = 1) => new F(n, d);
 const T = (f: F) => f.tex();
@@ -1672,3 +1673,6 @@ function termsTexLocal(c1: number, c0: number): string {
 }
 void round;
 void makeChoices;
+
+// 활용(문장제) 유형 덧붙이기
+for (const [u, sk] of Object.entries(CAL2_WORD)) cal2[u].skills.push(...sk);

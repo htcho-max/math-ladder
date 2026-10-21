@@ -26,7 +26,7 @@ import { recommend } from '../lib/mastery';
 import { activeProfile } from '../lib/store';
 
 export type PracticeMode =
-  | { kind: 'unit'; unitId: string; skillId?: string; cat?: Cat }
+  | { kind: 'unit'; unitId: string; skillId?: string; cat?: Cat; hard?: boolean }
   | { kind: 'review' }
   | { kind: 'retry'; key: string }
   | { kind: 'similar'; key: string }
@@ -88,7 +88,8 @@ function buildPlan(mode: PracticeMode): Plan | null {
           const lv = startLevel(skillScore(dd, it.unitId, it.skillId));
           return { p: makeProblem(it.unitId, it.skillId, lv, seed, pickChoice(seed, choiceRatio(), it.unitId)) };
         }
-        const sk = dailySkillPick(dd, it.unitId, prev);
+        // 새 문제 4개 중 1개는 문장제(있으면)
+        const sk = dailySkillPick(dd, it.unitId, prev, i % 4 === 2 ? 'word' : undefined);
         return { p: makeProblem(it.unitId, sk, level, seed, pickChoice(seed, choiceRatio(), it.unitId)) };
       },
       onGraded(i, ok) {
@@ -115,12 +116,12 @@ function buildPlan(mode: PracticeMode): Plan | null {
     if (!pool.length) return null;
     const base = sk ? skillScore(d, u.id, sk.id) : unitMastery(d, u.id) ?? 0;
     return {
-      title: sk ? sk.title : mode.cat ? `${u.title} · ${CAT_NAME[mode.cat]}` : `${u.title} 연습`,
+      title: mode.hard ? `${u.title} · 심화 도전` : sk ? sk.title : mode.cat ? `${u.title} · ${CAT_NAME[mode.cat]}` : `${u.title} 연습`,
       back: `/unit/${u.id}`,
       total: N,
-      startLevel: startLevel(base),
+      startLevel: mode.hard ? 3 : startLevel(base),
       unitId: u.id,
-      adaptive: true,
+      adaptive: !mode.hard,
       next(_i, level, prev) {
         let skillId = sk?.id;
         if (!skillId) {

@@ -7,7 +7,7 @@ export const META: MetaMap = {
       '받아올림한 $1$을 윗자리에 더하는 것을 잊어요 → 받아올린 $1$을 작게 적어 두고 윗자리를 더할 때 꼭 함께 더해요.',
       '$310-139$ 처럼 $0$이 있는 뺄셈에서 받아내림을 한 번만 해요 → 십의 자리가 $0$이면 백의 자리에서 빌려 와 십의 자리를 $9$로 만들어요.',
     ],
-    cats: { add3: 'calc', sub3: 'calc', word: 'word', 'missing-digit': 'calc', compare: 'calc' },
+    cats: { add3: 'calc', sub3: 'calc', word: 'word', 'missing-digit': 'calc', compare: 'calc', 'word-two': 'word' },
   },
   'e3a-2': {
     pitfalls: [
@@ -21,6 +21,8 @@ export const META: MetaMap = {
       'true-false': 'concept',
       'rect-perimeter': 'calc',
       'count-squares': 'concept',
+      'shape-wire': 'word',
+      'paper-cut': 'word',
     },
   },
   'e3a-3': {
@@ -28,14 +30,14 @@ export const META: MetaMap = {
       '$\\square\\div6=4$ 에서 $6\\div4$ 를 하려고 해요 → 나누어지는 수를 구하는 것이니 곱셈으로 바꿔 $6\\times4=24$ 예요.',
       '$16$ cm 끈을 $4$ cm씩 자를 때 자르는 횟수를 도막 수 $4$라고 해요 → 마지막 도막은 자르지 않으니 $4-1=3$ 번이에요.',
     ],
-    cats: { 'div-fact': 'calc', 'mul-div-relation': 'concept', 'repeated-sub': 'calc', 'share-word': 'word', 'div-compare': 'calc' },
+    cats: { 'div-fact': 'calc', 'mul-div-relation': 'concept', 'repeated-sub': 'calc', 'share-word': 'word', 'div-compare': 'calc', 'div-word2': 'word' },
   },
   'e3a-4': {
     pitfalls: [
       '$77\\times2$ 에서 일의 자리 곱 $14$를 그대로 써요 → $4$만 쓰고 $1$은 십의 자리로 올려 $14+1=15$ 처럼 더해요.',
       '"잘못하여 더했더니" 문제에서 잘못된 값으로 바로 곱해요 → 먼저 어떤 수를 구한 뒤 바르게 곱해요.',
     ],
-    cats: { mul21: 'calc', 'mul-word': 'word', 'mul-missing': 'calc', 'mul-compare': 'calc', 'mul-cards': 'calc' },
+    cats: { mul21: 'calc', 'mul-word': 'word', 'mul-missing': 'calc', 'mul-compare': 'calc', 'mul-cards': 'calc', 'mul-word2': 'word' },
   },
   'e3a-5': {
     pitfalls: [
@@ -50,6 +52,7 @@ export const META: MetaMap = {
       'time-calc': 'calc',
       'time-word': 'word',
       'unit-choose': 'concept',
+      'len-word': 'word',
     },
   },
   'e3a-6': {
@@ -64,6 +67,7 @@ export const META: MetaMap = {
       'part-whole': 'word',
       'decimal-read': 'calc',
       'decimal-compare': 'calc',
+      'dec-word': 'word',
     },
   },
   // ───────── 초3-2
@@ -72,7 +76,7 @@ export const META: MetaMap = {
       '$25\\times18$ 에서 십의 자리 곱 $25\\times1$ 을 한 칸 왼쪽으로 옮겨 쓰지 않아요 → 사실은 $25\\times10=250$ 이니 한 자리 밀어 써요.',
       '$80\\times80$ 을 $640$이라고 해요 → $8\\times8=64$ 뒤에 $0$을 두 개 붙여 $6400$이에요.',
     ],
-    cats: { mul31: 'calc', 'mul-tens': 'calc', mul22: 'calc', word: 'word', cards: 'calc' },
+    cats: { mul31: 'calc', 'mul-tens': 'calc', mul22: 'calc', word: 'word', cards: 'calc', 'word-two': 'word' },
   },
   'e3b-2': {
     pitfalls: [
@@ -80,7 +84,7 @@ export const META: MetaMap = {
       '$52$ cm로 $6$ cm짜리를 몇 개 만드는지에서 나머지까지 한 개로 세요 → 남은 $4$ cm로는 하나를 못 만드니 몫 $8$개만 답해요.',
       '검산을 $9\\times6$ 까지만 해요 → (나누는 수)$\\times$(몫)에 나머지를 꼭 더해야 나누어지는 수가 나와요.',
     ],
-    cats: { 'div-tens': 'calc', 'div-rem': 'calc', div3: 'calc', check: 'calc', word: 'word' },
+    cats: { 'div-tens': 'calc', 'div-rem': 'calc', div3: 'calc', check: 'calc', word: 'word', 'word-two': 'word' },
   },
   'e3b-3': {
     pitfalls: [
@@ -93,6 +97,8 @@ export const META: MetaMap = {
       'circles-in-rect': 'calc',
       'center-chain': 'calc',
       'center-triangle': 'calc',
+      'circle-life': 'word',
+      'compass-word': 'word',
     },
   },
   'e3b-4': {
@@ -107,6 +113,8 @@ export const META: MetaMap = {
       'mixed-improper': 'calc',
       'frac-kind': 'concept',
       'frac-compare': 'calc',
+      'frac-of-word': 'word',
+      'mixed-word': 'word',
     },
   },
   'e3b-5': {
@@ -114,14 +122,14 @@ export const META: MetaMap = {
       '$1$ L를 $100$ mL로 생각해요 → $1$ L $=1000$ mL, $1$ kg $=1000$ g이에요.',
       '$9$ kg $70$ g을 $9$ kg $700$ g처럼 읽어요 → $70$ g은 $070$ g이에요. 자리를 맞춰 계산해요.',
     ],
-    cats: { convert: 'calc', 'cap-calc': 'calc', 'wt-calc': 'calc', 'unit-estimate': 'concept', word: 'word' },
+    cats: { convert: 'calc', 'cap-calc': 'calc', 'wt-calc': 'calc', 'unit-estimate': 'concept', word: 'word', 'word-two': 'word' },
   },
   'e3b-6': {
     pitfalls: [
       '큰 그림과 작은 그림을 똑같이 한 개로 세요 → 그림마다 나타내는 수(예: 큰 그림 $10$, 작은 그림 $1$)를 확인하고 곱해서 더해요.',
       '그림 개수가 많으면 양도 많다고 해요 → 작은 그림이 많아도 큰 그림이 적으면 양이 적을 수 있어요. 수로 바꿔 비교해요.',
     ],
-    cats: { read: 'concept', 'most-least': 'concept', 'sum-diff': 'calc', 'to-graph': 'concept', missing: 'calc' },
+    cats: { read: 'concept', 'most-least': 'concept', 'sum-diff': 'calc', 'to-graph': 'concept', missing: 'calc', 'graph-use': 'word', 'graph-condition': 'word' },
   },
   // ───────── 초4-1
   'e4a-1': {
@@ -130,7 +138,7 @@ export const META: MetaMap = {
       '빈 자리에 $0$을 쓰지 않아요 → 읽지 않은 자리는 $0$으로 채워야 해요. 쓴 뒤 자리 수를 세어 확인해요.',
       '자리 수가 다른 큰 수를 앞자리 숫자만 보고 비교해요 → 먼저 자리 수를 비교하고, 같으면 높은 자리부터 비교해요.',
     ],
-    cats: { 'read-write': 'calc', 'place-value': 'concept', 'skip-count': 'calc', compare: 'calc', money: 'calc' },
+    cats: { 'read-write': 'calc', 'place-value': 'concept', 'skip-count': 'calc', compare: 'calc', money: 'calc', 'save-skip': 'word', 'bill-count': 'word' },
   },
   'e4a-2': {
     pitfalls: [
@@ -145,6 +153,8 @@ export const META: MetaMap = {
       'quad-angle': 'calc',
       straight: 'calc',
       'clock-angle': 'calc',
+      'angle-life': 'word',
+      'angle-find': 'word',
     },
   },
   'e4a-3': {
@@ -152,7 +162,7 @@ export const META: MetaMap = {
       '$506\\times93$ 에서 $506\\times9$ 를 한 자리 밀어 쓰지 않아요 → 실제로는 $506\\times90$ 이니 일의 자리를 비우고 써요.',
       '버스 대수를 몫만 답해요 → 남은 학생도 타야 하니 나머지가 있으면 몫에 $1$을 더해요.',
     ],
-    cats: { mul32: 'calc', div2: 'calc', check: 'calc', word: 'word', estimate: 'calc' },
+    cats: { mul32: 'calc', div2: 'calc', check: 'calc', word: 'word', estimate: 'calc', 'word-two': 'word' },
   },
   'e4a-4': {
     pitfalls: [
@@ -167,14 +177,14 @@ export const META: MetaMap = {
       '눈금 한 칸을 무조건 $1$로 읽어요 → 세로 눈금 숫자를 보고 한 칸이 얼마인지 먼저 구해요.',
       '막대가 길면 몇 배인지 길이 차로 답해요 → 몇 배는 큰 수를 작은 수로 나누어 구해요.',
     ],
-    cats: { read: 'concept', compare: 'calc', 'table-link': 'calc', times: 'calc', interpret: 'concept' },
+    cats: { read: 'concept', compare: 'calc', 'table-link': 'calc', times: 'calc', interpret: 'concept', 'bar-use': 'word', 'bar-condition': 'word' },
   },
   'e4a-6': {
     pitfalls: [
       '$22+41=23+\\square$ 에서 $22+41$ 의 값 $63$을 답으로 써요 → 등호 양쪽 값이 같아야 하니 $63-23=40$ 이에요.',
       '수 배열에서 앞 두 수만 보고 규칙을 정해요 → 차가 일정한지, 차가 $1$씩 커지는지 여러 개를 비교해요.',
     ],
-    cats: { 'num-table': 'calc', seq: 'calc', 'shape-pattern': 'concept', 'calc-pattern': 'calc', 'equal-sign': 'concept' },
+    cats: { 'num-table': 'calc', seq: 'calc', 'shape-pattern': 'concept', 'calc-pattern': 'calc', 'equal-sign': 'concept', 'pattern-life': 'word', 'number-pattern': 'word' },
   },
   // ───────── 초4-2
   'e4b-1': {
@@ -190,6 +200,7 @@ export const META: MetaMap = {
       'sub-mixed': 'calc',
       word: 'word',
       missing: 'calc',
+      'word-two': 'word',
     },
   },
   'e4b-2': {
@@ -197,7 +208,7 @@ export const META: MetaMap = {
       '이등변삼각형에서 길이가 같은 두 변이 어느 것인지 확인하지 않아요 → 그림의 표시나 조건을 보고 같은 두 변을 먼저 찾아요.',
       '두 각이 같으면 무조건 예각삼각형이라고 해요 → 나머지 한 각도 구해서 $90^{\\circ}$ 보다 크면 둔각삼각형이에요.',
     ],
-    cats: { 'iso-side': 'calc', 'iso-angle': 'calc', 'classify-angle': 'concept', equilateral: 'calc', 'true-false': 'concept' },
+    cats: { 'iso-side': 'calc', 'iso-angle': 'calc', 'classify-angle': 'concept', equilateral: 'calc', 'true-false': 'concept', 'tri-wire': 'word', 'tri-angle-word': 'word' },
   },
   'e4b-3': {
     pitfalls: [
@@ -212,6 +223,7 @@ export const META: MetaMap = {
       'dec-add': 'calc',
       'dec-sub': 'calc',
       word: 'word',
+      'word-two': 'word',
     },
   },
   'e4b-4': {
@@ -226,6 +238,8 @@ export const META: MetaMap = {
       'quad-relation': 'concept',
       'perp-angle': 'calc',
       'parallel-distance': 'calc',
+      'quad-wire': 'word',
+      'quad-angle-word': 'word',
     },
   },
   'e4b-5': {
@@ -233,7 +247,7 @@ export const META: MetaMap = {
       '물결선(≈)이 있는 그래프에서 눈금을 $0$부터 센다고 생각해요 → 물결선 위 첫 눈금 숫자부터 읽어요.',
       '변화가 가장 큰 때를 값이 가장 큰 때로 답해요 → 선이 가장 많이 기울어진(두 점의 차가 가장 큰) 곳을 찾아요.',
     ],
-    cats: { read: 'concept', change: 'concept', diff: 'calc', middle: 'calc', 'which-graph': 'concept' },
+    cats: { read: 'concept', change: 'concept', diff: 'calc', middle: 'calc', 'which-graph': 'concept', 'line-predict': 'word', 'line-use': 'word' },
   },
   'e4b-6': {
     pitfalls: [
@@ -247,6 +261,8 @@ export const META: MetaMap = {
       'regular-perimeter': 'calc',
       'regular-angle': 'calc',
       'diag-props': 'concept',
+      'regular-wire': 'word',
+      'polygon-word': 'word',
     },
   },
 };

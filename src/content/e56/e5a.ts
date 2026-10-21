@@ -7,6 +7,7 @@ import { comma, makeChoices, numChoices } from '../../core/tex';
 import { regularPolygon, Svg } from '../../core/fig';
 import { pickName, pickNames, josa, jo, fracAns, intAns, decAns, ft, mt, properFrac, reduceTex, dt, places, nj, ro, fj, p10 } from './util';
 import { shapeFig, P } from './fig56';
+import { WORD5 } from './words5';
 
 // ───────────── 혼합 계산 (식 나무) ─────────────
 type Op = '+' | '-' | '*' | '/';
@@ -1667,3 +1668,6 @@ export const content: ContentMap = {
   },
 };
 
+
+// 문장제 추가 유형 (words5.ts) — 기존 유형 뒤에 덧붙임 (기존 id·순서 유지)
+for (const [u, sks] of Object.entries(WORD5)) content[u]?.skills.push(...sks);

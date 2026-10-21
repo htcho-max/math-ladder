@@ -1,5 +1,6 @@
 // 오늘의 학습: 하루 목표만큼의 문제를 한 묶음으로 (오답 복습 → 추천 단원 → 약한 유형)
 import { CONTENT } from '../content';
+import { skillCat, type Cat } from '../content/meta';
 import { UNIT_BY_ID, prereqChain, unitsOf } from '../core/curriculum';
 import { hashStr, Rng } from '../core/rng';
 import { dueWrong, recommend, skillKey, skillScore } from './mastery';
@@ -140,10 +141,12 @@ export function dailyStatus(d: ProfileData): { total: number; idx: number; done:
   return { total: rwOf(d).goal, idx: 0, done };
 }
 
-export function dailySkillPick(d: ProfileData, unitId: string, prev?: string): string {
+export function dailySkillPick(d: ProfileData, unitId: string, prev?: string, want?: Cat): string {
   const c = CONTENT[unitId];
-  const ranked = c.skills
-    .filter((s) => s.id !== prev || c.skills.length === 1)
+  const pool = want ? c.skills.filter((s) => skillCat(unitId, s.id) === want) : [];
+  const list = pool.length ? pool : c.skills;
+  const ranked = list
+    .filter((s) => s.id !== prev || list.length === 1)
     .map((s) => ({ id: s.id, w: skillScore(d, unitId, s.id) + Math.random() * 45 }))
     .sort((a, b) => a.w - b.w);
   return ranked[0].id;

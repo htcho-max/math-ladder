@@ -72,15 +72,24 @@ describe('교육과정·문제 키', () => {
   });
 });
 
-import { levelInfo, levelNeed, starsFor, BADGES } from '../src/lib/reward';
+import { levelInfo, levelNeed, starsFor, BADGES, convertXp } from '../src/lib/reward';
 describe('보상', () => {
   it('레벨 곡선', () => {
     expect(levelInfo(0).level).toBe(1);
-    expect(levelInfo(99).level).toBe(1);
-    expect(levelInfo(100).level).toBe(2);
-    expect(levelInfo(100 + 150).level).toBe(3);
-    expect(levelNeed(3)).toBe(200);
-    expect(levelInfo(100000).title).toBe('수학 전설');
+    expect(levelInfo(199).level).toBe(1);
+    expect(levelInfo(200).level).toBe(2);
+    expect(levelInfo(200 + 400).level).toBe(3);
+    expect(levelNeed(3)).toBe(600);
+    expect(levelInfo(300000).title).toBe('수학 전설');
+  });
+  it('예전 XP 옮기기: 레벨과 진행 비율 유지', () => {
+    expect(convertXp(0)).toBe(0);
+    expect(levelInfo(convertXp(99)).level).toBe(1);
+    expect(levelInfo(convertXp(250)).level).toBe(3); // 예전 Lv3 시작
+    expect(levelInfo(convertXp(250)).into).toBe(0);
+    const li = levelInfo(convertXp(250 + 100)); // 예전 Lv3 의 절반
+    expect(li.level).toBe(3);
+    expect(li.into / li.need).toBeCloseTo(0.5, 2);
   });
   it('별', () => {
     expect([null, 0, 49, 50, 79, 80, 94, 95, 100].map(starsFor)).toEqual([0, 0, 0, 1, 1, 2, 2, 3, 3]);
@@ -279,5 +288,24 @@ describe('오늘의 학습 — 지난 학년 비율', () => {
     expect(p.items.length).toBe(20);
     const old = p.items.filter((x) => UNIT_BY_ID[x.unitId].course === 'e2b').length;
     expect(old).toBeLessThanOrEqual(5);
+  });
+});
+
+import { tutorChat } from '../src/lib/ai';
+describe('Gemini 모델이 닫혔을 때', () => {
+  it('404 안내의 새 모델로 다시 시도하고 설정을 바꿈', async () => {
+    const urls: string[] = [];
+    const old = globalThis.fetch;
+    globalThis.fetch = (async (u: string) => {
+      urls.push(u);
+      if (urls.length === 1)
+        return { ok: false, status: 404, json: async () => ({ error: { message: 'This model models/gemini-2.5-flash-lite is no longer available to new users. Please update your code to use models/gemini-9.9-flash-lite for the latest features.' } }) };
+      return { ok: true, json: async () => ({ candidates: [{ content: { parts: [{ text: '안녕' }] } }] }) };
+    }) as never;
+    const out = await tutorChat('k', 'gemini-2.5-flash-lite', { title: 't', course: 'e1a', summary: '', concepts: '' }, '초1', [{ role: 'user', text: 'hi' }]);
+    globalThis.fetch = old;
+    expect(out).toBe('안녕');
+    expect(urls[1]).toContain('models/gemini-9.9-flash-lite:generateContent');
+    expect(getState().settings.geminiModel).toBe('gemini-9.9-flash-lite');
   });
 });

@@ -10,6 +10,8 @@ import { m1b2 } from './m12/m1b2';
 import { m2a } from './m12/m2a';
 import { m2a2 } from './m12/m2a2';
 import { withJosaFix } from './m12/josa';
+import { word1 } from './m12/word1';
+import { word2 } from './m12/word2';
 
 /** 소인수분해 TeX: 2^{3}\times 3\times 5 */
 const factTex = (n: number) =>
@@ -168,6 +170,9 @@ const raw: ContentMap = {
   ...m2a,
   ...m2a2,
 };
+
+// 활용(문장제) 유형 추가분을 각 단원 유형 목록 뒤에 붙임
+for (const [id, sks] of Object.entries({ ...word1, ...word2 })) raw[id].skills.push(...sks);
 
 /** 수식 뒤 조사(을/를, 이/가 …)를 자동 교정해서 내보냄 */
 export const content: ContentMap = withJosaFix(raw);

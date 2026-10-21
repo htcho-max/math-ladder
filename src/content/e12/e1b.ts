@@ -1,5 +1,6 @@
 // 초1-2: 100까지의 수 / 덧셈과 뺄셈(1) / 모양과 시각 / 덧셈과 뺄셈(2) / 규칙 찾기 / 덧셈과 뺄셈(3)
 import type { ContentMap, Level } from '../../core/types';
+import { WORDS_1 } from './words1';
 import type { Rng } from '../../core/rng';
 import { makeChoices } from '../../core/tex';
 import { range } from '../../core/nt';
@@ -1199,3 +1200,6 @@ export const e1b: ContentMap = {
     ],
   },
 };
+
+// 문장제 유형 덧붙이기 (words*.ts)
+for (const [id, sks] of Object.entries(WORDS_1)) if (e1b[id]) e1b[id].skills.push(...sks);

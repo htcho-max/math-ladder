@@ -104,6 +104,8 @@ export interface Quest {
 }
 export interface RewardData {
   xp: number;
+  /** 레벨 곡선 버전 (없으면 1) */
+  curve?: number;
   freezes: number;
   frozen: Record<string, true>;
   badges: Record<string, number>;
@@ -143,7 +145,11 @@ export interface State {
 }
 
 const emptyData = (): ProfileData => ({ skills: {}, days: {}, wrong: {}, exams: [] });
-const defaultSettings: Settings = { geminiKey: '', geminiModel: 'gemini-2.5-flash-lite', theme: 'auto', choiceMode: 'mix', effects: true, lockMode: false, tts: 'auto', look: 'auto' };
+/** 기본 Gemini 모델 (구글이 옛 모델을 닫으면 여기만 바꾸면 됨) */
+export const DEFAULT_MODEL = 'gemini-3.5-flash-lite';
+/** 예전 기본값 — 저장돼 있으면 새 기본값으로 바꿈 */
+const OLD_MODELS = ['gemini-2.5-flash-lite', 'gemini-2.0-flash', 'gemini-2.0-flash-lite', 'gemini-1.5-flash'];
+const defaultSettings: Settings = { geminiKey: '', geminiModel: DEFAULT_MODEL, theme: 'auto', choiceMode: 'mix', effects: true, lockMode: false, tts: 'auto', look: 'auto' };
 
 function read<T>(k: string): T | null {
   try {
@@ -177,6 +183,7 @@ function load(): State {
   if (!profiles.length) profiles = [{ id: newId(), name: '학생', course: 'e1a' }];
   const active = profiles.some((p) => p.id === pf?.active) ? pf!.active : profiles[0].id;
   const settings = { ...defaultSettings, ...(read<Settings>(`${P}.settings`) ?? {}) };
+  if (!settings.geminiModel || OLD_MODELS.includes(settings.geminiModel)) settings.geminiModel = DEFAULT_MODEL;
   const data = { ...emptyData(), ...(read<ProfileData>(`${P}.${active}.data`) ?? {}) };
   return { profiles, active, settings, data, storageError: null };
 }

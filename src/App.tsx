@@ -14,7 +14,7 @@ import { BadgesPage } from './pages/BadgesPage';
 import { ClosetPage } from './pages/ClosetPage';
 import { ParentPage } from './pages/ParentPage';
 import { Toasts } from './ui/Celebrate';
-import { applyFreezes } from './lib/reward';
+import { applyFreezes, migrateXp } from './lib/reward';
 import { OfflineBadge } from './ui/Offline';
 import { Icon } from './ui/Icon';
 import { COURSE_BY_ID } from './core/curriculum';
@@ -39,6 +39,7 @@ function Page({ r }: { r: string[] }) {
       return <UnitPage id={b} />;
     case 'practice':
       if (b === 'c' && c && (d === 'calc' || d === 'concept' || d === 'word')) return <PracticePage mode={{ kind: 'unit', unitId: c, cat: d }} />;
+      if (b === 'h' && c) return <PracticePage mode={{ kind: 'unit', unitId: c, hard: true }} />;
       return b === 'u' && c ? <PracticePage mode={{ kind: 'unit', unitId: c, skillId: d }} /> : <NotFound />;
     case 'review':
       return <PracticePage mode={{ kind: 'review' }} />;
@@ -84,9 +85,11 @@ export function App() {
   }, [stage]);
   const storageError = useStore((s) => s.storageError);
   const due = useStore((s) => dueWrong(s.data).length);
+  const active = useStore((s) => s.active);
   useEffect(() => {
+    migrateXp();
     applyFreezes();
-  }, []);
+  }, [active]);
   useEffect(() => {
     const el = document.documentElement;
     if (theme === 'auto') delete el.dataset.theme;

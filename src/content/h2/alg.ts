@@ -4,6 +4,7 @@ import { F } from '../../core/frac';
 import { divisors, gcd, simplifySqrt, range } from '../../core/nt';
 import { poly, sqrtTex, termsTex } from '../../core/tex';
 import { L, NAMES, cv, deg, josa, texJosa, piTex, radTex, radian, tch, wch } from './util';
+import { ALG_WORD } from './word-alg';
 
 // ───────────── 삼각함수 특수각 ─────────────
 const S2 = Math.SQRT2 / 2,
@@ -1893,3 +1894,6 @@ export const alg: ContentMap = {
 function paren(n: number): string {
   return n < 0 ? `(${n})` : String(n);
 }
+
+// 활용(문장제) 유형 덧붙이기
+for (const [u, sk] of Object.entries(ALG_WORD)) alg[u].skills.push(...sk);
