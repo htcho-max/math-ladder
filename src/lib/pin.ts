@@ -56,7 +56,7 @@ export function lockNow(): void {
 export async function setPin(pin: string, recovery?: { q: string; a: string }): Promise<void> {
   const parentPin = await makeRec(pin);
   const pinRecovery = recovery && recovery.q.trim() && recovery.a.trim() ? { q: recovery.q.trim(), ...(await makeRec(recovery.a.toLowerCase().replace(/\s+/g, ''))) } : undefined;
-  updateSettings({ parentPin, pinRecovery });
+  updateSettings({ parentPin, pinRecovery, pinOff: false });
   unlock();
 }
 
@@ -72,7 +72,8 @@ export async function checkRecovery(answer: string): Promise<boolean> {
   return matches(r, answer.toLowerCase().replace(/\s+/g, ''));
 }
 
-export function removePin(): void {
-  updateSettings({ parentPin: undefined, pinRecovery: undefined });
+/** PIN 삭제. off=true 면 'PIN 없이 쓰기'(다시 만들라고 묻지 않음) */
+export function removePin(off = false): void {
+  updateSettings({ parentPin: undefined, pinRecovery: undefined, pinOff: off });
   lockNow();
 }

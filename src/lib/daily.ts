@@ -18,6 +18,8 @@ export interface DailyPlan {
   idx: number;
   correct: number;
   done?: boolean;
+  /** 만들 때의 학년(과정). 학년이 바뀌면 남은 문제를 새 학년으로 다시 짬 */
+  course?: string;
 }
 
 /** 약한 유형: 풀어 본 적 있고 점수 70 미만, 오래된 순 (추천 단원 제외) */
@@ -65,18 +67,38 @@ export function buildDaily(d: ProfileData, day = dayKey()): DailyPlan {
   // 약한 유형은 새 문제 사이사이에 섞기 (복습은 맨 앞)
   const head = items.filter((x) => x.kind === 'review');
   const rest = r.shuffle(items.filter((x) => x.kind !== 'review'));
-  return { day, items: [...head, ...rest], idx: 0, correct: 0 };
+  return { day, items: [...head, ...rest], idx: 0, correct: 0, course: activeProfile().course };
 }
 
 /** 오늘 계획 (없거나 날이 바뀌었으면 새로) — 저장된 것을 그대로 돌려줌 */
 export function todayDaily(create = true): DailyPlan | null {
   const day = dayKey();
   const saved = readProfileKey<DailyPlan>('daily');
-  if (saved && saved.day === day) return saved;
+  if (saved && saved.day === day) return syncCourse(saved);
   if (!create) return null;
   const p = buildDaily(getState().data, day);
   writeProfileKey('daily', p);
   return p;
+}
+
+/** 학년이 바뀌었으면: 이미 푼 문제는 두고, 남은 문제만 새 학년 기준으로 다시 만듦 */
+function syncCourse(p: DailyPlan): DailyPlan {
+  const course = activeProfile().course;
+  if (p.done || p.course === course) return p;
+  if (p.course === undefined && p.idx > 0) {
+    // 예전 버전에서 만든 진행 중 계획: 학년을 알 수 없으니 그대로 두고 표시만
+    const q = { ...p, course };
+    writeProfileKey('daily', q);
+    return q;
+  }
+  const fresh = buildDaily(getState().data, p.day);
+  const kept = p.items.slice(0, p.idx);
+  const keptKeys = new Set(kept.flatMap((x) => (x.kind === 'review' ? [x.key] : [])));
+  const restN = Math.max(0, p.items.length - p.idx);
+  const rest = fresh.items.filter((x) => !(x.kind === 'review' && keptKeys.has(x.key))).slice(0, restN);
+  const q: DailyPlan = { ...p, items: [...kept, ...rest], course };
+  writeProfileKey('daily', q);
+  return q;
 }
 
 export function saveDaily(p: DailyPlan): void {
@@ -88,7 +110,10 @@ export function dailyStatus(d: ProfileData): { total: number; idx: number; done:
   const day = dayKey();
   const saved = readProfileKey<DailyPlan>('daily');
   const done = !!rwOf(d).dailyDone?.[day];
-  if (saved && saved.day === day) return { total: saved.items.length, idx: saved.idx, done: done || !!saved.done };
+  if (saved && saved.day === day) {
+    const p = syncCourse(saved);
+    return { total: p.items.length, idx: p.idx, done: done || !!p.done };
+  }
   return { total: rwOf(d).goal, idx: 0, done };
 }
 

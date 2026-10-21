@@ -945,3 +945,14 @@ input.ans {
 .examlist { display: grid; gap: 6px; }
 .examrow { display: flex; gap: 10px; align-items: center; padding: 10px 12px; border-radius: 10px; border: 1px solid var(--line); background: var(--card); color: var(--text); font: inherit; text-align: left; cursor: pointer; }
 .examrow .grow { flex: 1; }
+
+/* ───────── 문제 화면 셈이 (v0.8.1) ───────── */
+.buddy { display: flex; align-items: center; gap: 10px; margin: 2px 4px 10px; }
+.buddy .mascot { flex: none; }
+.buddy-bubble { position: relative; background: var(--card); border: 1.5px solid var(--line); border-radius: 16px; padding: 8px 12px; font-size: 14px; font-weight: 600; animation: bubble-in .25s ease-out; }
+.buddy-bubble::before { content: ''; position: absolute; left: -7px; top: 50%; width: 12px; height: 12px; background: var(--card); border-left: 1.5px solid var(--line); border-bottom: 1.5px solid var(--line); transform: translateY(-50%) rotate(45deg); }
+.buddy.ok .buddy-bubble { border-color: var(--good); color: var(--good); }
+.buddy.no .buddy-bubble { border-color: var(--accent); }
+@keyframes bubble-in { from { opacity: 0; transform: translateY(4px) scale(.96); } }
+@media (prefers-reduced-motion: reduce) { .buddy-bubble { animation: none; } }
+.mood-h { margin-top: 4px; }

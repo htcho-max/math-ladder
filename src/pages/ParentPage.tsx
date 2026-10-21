@@ -18,10 +18,9 @@ import { SettingsPage } from './SettingsPage';
 
 export function ParentPage({ tab = 'report' }: { tab?: string }) {
   const [, force] = useState(0);
-  const settings = useStore((s) => s.settings);
-  void settings;
+  const pinOff = useStore((s) => s.settings.pinOff);
   if (!isUnlocked()) return <PinGate onOk={() => force((x) => x + 1)} />;
-  if (!hasPin()) return <PinSetup first onDone={() => force((x) => x + 1)} />;
+  if (!hasPin() && !pinOff) return <PinSetup first onDone={() => force((x) => x + 1)} />;
   return (
     <div className="page parent">
       <Header title="부모 메뉴" back="/">
@@ -186,7 +185,7 @@ function PinSetup({ first, onDone }: { first?: boolean; onDone: () => void }) {
             <div className="muted small">오늘의 학습 분량, 학년, 문제 형식 같은 설정과 학습 리포트를 아이가 바꾸지 못하게 잠가요.</div>
             <Keypad value={a} onChange={setA} onEnter={() => setStep(2)} />
             {first && (
-              <button className="link" onClick={() => (removePin(), onDone())}>
+              <button className="link" onClick={() => (removePin(true), onDone())}>
                 PIN 없이 쓰기
               </button>
             )}
@@ -246,7 +245,7 @@ function PinManage({ onChange }: { onChange: () => void }) {
           {hasPin() ? 'PIN 바꾸기' : 'PIN 만들기'}
         </button>
         {hasPin() && (
-          <button className="btn ghost" onClick={() => (removePin(), onChange())}>
+          <button className="btn ghost" onClick={() => (removePin(true), onChange())}>
             PIN 없애기
           </button>
         )}

@@ -6,7 +6,7 @@ import { itemOf, type Outfit } from '../lib/closet';
 const EMPTY: Outfit = {};
 import { useStore } from '../lib/store';
 
-type Mood = 'happy' | 'cheer' | 'think' | 'sleepy';
+export type Mood = 'happy' | 'cheer' | 'think' | 'sleepy';
 
 const INK = '#1b1f33';
 

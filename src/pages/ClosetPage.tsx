@@ -1,6 +1,6 @@
 // 셈이 꾸미기 화면
 import { useState } from 'react';
-import { ITEMS, SLOT_NAME, isUnlocked, outfitOf, unlockText, unlockedCount, wear, type Outfit, type Slot } from '../lib/closet';
+import { ITEMS, SLOT_NAME, isUnlocked, outfitOf, setMood as saveMood, unlockText, unlockedCount, wear, type Outfit, type Slot } from '../lib/closet';
 import { levelInfo, rwOf } from '../lib/reward';
 import { useStore } from '../lib/store';
 import { Header } from '../ui/bits';
@@ -18,7 +18,8 @@ export function ClosetPage() {
   const d = useStore((s) => s.data);
   const outfit = outfitOf(d);
   const [slot, setSlot] = useState<Slot>('hat');
-  const [mood, setMood] = useState<(typeof MOODS)[number][0]>('cheer');
+  const mood = outfit.mood ?? 'happy';
+  const setMood = saveMood;
   const [peek, setPeek] = useState<Outfit | null>(null); // 잠긴 아이템 미리 보기
   const lv = levelInfo(rwOf(d).xp);
   const cnt = unlockedCount(d);
@@ -33,6 +34,7 @@ export function ClosetPage() {
           <Mascot mood={mood} size={190} outfit={shown} />
           {peek && <div className="peek-tag">미리 보기</div>}
         </div>
+        <div className="muted small mood-h">기본 표정 — 홈 화면과 문제 풀 때 이 표정이에요</div>
         <div className="seg">
           {MOODS.map(([k, label]) => (
             <button key={k} className={mood === k ? 'on' : ''} onClick={() => setMood(k)}>

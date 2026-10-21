@@ -9,6 +9,8 @@ export interface Outfit {
   face?: string;
   hand?: string;
   fx?: string;
+  /** 기본 표정 (홈 화면·문제 풀기 전) */
+  mood?: 'happy' | 'cheer' | 'think' | 'sleepy';
 }
 export interface Item {
   id: string;
@@ -97,6 +99,13 @@ export function wear(slot: Slot, id: string): void {
   updateData((d) => {
     const rw = rwOf(d);
     return { ...d, rw: { ...rw, outfit: { ...(rw.outfit ?? {}), [slot]: id } } };
+  });
+}
+
+export function setMood(mood: NonNullable<Outfit['mood']>): void {
+  updateData((d) => {
+    const rw = rwOf(d);
+    return { ...d, rw: { ...rw, outfit: { ...(rw.outfit ?? {}), mood } } };
   });
 }
 

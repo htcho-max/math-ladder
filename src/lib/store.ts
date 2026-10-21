@@ -17,6 +17,8 @@ export interface Settings {
   parentPin?: { salt: string; hash: string };
   /** PIN 을 잊었을 때 확인 질문 (답은 해시) */
   pinRecovery?: { q: string; salt: string; hash: string };
+  /** 부모가 'PIN 없이 쓰기'를 고름 */
+  pinOff?: boolean;
   /** 화면 테마: 학년에 맞게(auto) / 초등 / 중등 / 고등 */
   look?: 'auto' | 'e' | 'm' | 'h';
   /** 선수 단원 잠금 모드: 선수 단원 별 1개 이상이어야 연습 가능 */
@@ -25,6 +27,8 @@ export interface Settings {
   tts?: 'auto' | 'on' | 'off';
   /** 축하 효과(색종이) */
   effects?: boolean;
+  /** 문제 화면에 셈이 (기본 켜짐) */
+  buddy?: boolean;
   /** 문제 형식: 섞기(기본) / 주관식 위주 / 객관식 위주 */
   choiceMode?: 'mix' | 'open' | 'choice';
 }
@@ -117,7 +121,7 @@ export interface RewardData {
   /** 오늘의 학습 완료한 날 */
   dailyDone?: Record<string, true>;
   /** 셈이 꾸미기 (closet.ts Outfit) */
-  outfit?: { color?: string; hat?: string; face?: string; hand?: string; fx?: string };
+  outfit?: { color?: string; hat?: string; face?: string; hand?: string; fx?: string; mood?: 'happy' | 'cheer' | 'think' | 'sleepy' };
   /** 진단 평가로 인증된 단원 */
   certified?: Record<string, number>;
 }

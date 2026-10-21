@@ -223,3 +223,39 @@ describe('부모 PIN', () => {
     expect(hasPin()).toBe(false);
   });
 });
+
+import { todayDaily, saveDaily } from '../src/lib/daily';
+import { activeProfile, updateProfile } from '../src/lib/store';
+import { UNIT_BY_ID as UB } from '../src/core/curriculum';
+describe('오늘의 학습 — 학년 바꾸기', () => {
+  it('시작 전이면 새 학년 문제로, 푼 문제는 그대로 두고 남은 것만 새 학년으로', () => {
+    const mem: Record<string, string> = {};
+    (globalThis as { localStorage?: unknown }).localStorage = {
+      getItem: (k: string) => mem[k] ?? null,
+      setItem: (k: string, v: string) => void (mem[k] = v),
+      removeItem: (k: string) => void delete mem[k],
+      key: (i: number) => Object.keys(mem)[i] ?? null,
+      get length() { return Object.keys(mem).length; },
+    };
+    const id = activeProfile().id;
+    updateProfile(id, { course: 'e2a' });
+    saveDaily(null as never);
+    const a = todayDaily()!;
+    expect(a.course).toBe('e2a');
+    updateProfile(id, { course: 'm1a' });
+    const b = todayDaily()!;
+    expect(b.course).toBe('m1a');
+    const news = b.items.filter((x) => x.kind === 'new');
+    expect(news.length).toBeGreaterThan(0);
+    expect(news.every((x) => UB[x.unitId].course === 'm1a' || UB[x.unitId].course.startsWith('e'))).toBe(true);
+    expect(news.some((x) => UB[x.unitId].course === 'm1a')).toBe(true);
+    // 3문제 풀고 학년 바꾸기
+    saveDaily({ ...b, idx: 3 });
+    updateProfile(id, { course: 'h1a' in UB ? 'h1a' : 'm2a' });
+    const c = todayDaily()!;
+    expect(c.items.slice(0, 3)).toEqual(b.items.slice(0, 3));
+    expect(c.items.length).toBe(b.items.length);
+    expect(c.idx).toBe(3);
+    expect(c.course).toBe(activeProfile().course);
+  });
+});

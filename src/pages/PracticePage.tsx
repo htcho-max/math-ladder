@@ -20,7 +20,7 @@ import { skillCat, CAT_NAME, type Cat } from '../content/meta';
 import { isLocked, LockedCard } from '../ui/Lock';
 import { ScratchButton, Scratchpad } from '../ui/Scratchpad';
 import { SpeakButton } from '../ui/Speak';
-import { Mascot } from '../ui/Mascot';
+import { Mascot, type Mood } from '../ui/Mascot';
 import { DailyCalendar } from '../ui/DailyCalendar';
 import { recommend } from '../lib/mastery';
 import { activeProfile } from '../lib/store';
@@ -391,6 +391,7 @@ export function PracticePage({ mode }: { mode: PracticeMode }) {
       <div className="progress">
         <div style={{ width: `${(idx / plan.total) * 100}%` }} />
       </div>
+      {settings.buddy !== false && <Buddy pkey={p.key} verdict={verdict} combo={combo} hintLv={hintLv} twin={!!cur.twin} last={idx + 1 >= plan.total} />}
       <section className="card pcard">
         <div className="pmeta">
           <span className="lv" data-lv={p.level}>
@@ -487,6 +488,43 @@ function DailyDone() {
         </div>
       </section>
       <DailyCalendar />
+    </div>
+  );
+}
+
+// 문제 화면의 셈이: 풀기 전엔 기본 표정, 채점하면 반응
+const TALK = {
+  start: ['천천히 읽어 보자!', '할 수 있어!', '문제를 끝까지 읽어 봐', '같이 풀어 보자', '차근차근!'],
+  hint: ['힌트를 잘 보면 길이 보여', '한 단계씩 생각해 봐', '거의 다 왔어!'],
+  twin: ['아까 그 유형이야. 이번엔 맞힐 수 있어!', '숫자만 바뀌었어. 풀이를 떠올려 봐!'],
+  ok: ['정답이야! 🎉', '최고야!', '맞았어! 잘했어', '우와, 대단해!', '딩동댕!'],
+  combo: ['연속 정답! 불타오른다 🔥', '멈출 수가 없네!', '완전 집중했구나!'],
+  no: ['괜찮아, 풀이를 같이 보자', '아깝다! 어디서 달라졌는지 볼까?', '틀려도 괜찮아. 이렇게 배우는 거야', '다음엔 꼭 맞힐 거야!'],
+  last: ['마지막 문제였어! 결과 보러 가자'],
+};
+function pick(list: string[], key: string): string {
+  let h = 0;
+  for (let i = 0; i < key.length; i++) h = (h * 31 + key.charCodeAt(i)) | 0;
+  return list[Math.abs(h) % list.length];
+}
+function Buddy({ pkey, verdict, combo, hintLv, twin, last }: { pkey: string; verdict: Verdict | null; combo: number; hintLv: number; twin: boolean; last: boolean }) {
+  const base = useStore((s) => s.data.rw?.outfit?.mood) ?? 'happy';
+  let mood: Mood = base;
+  let text: string;
+  if (verdict?.ok) {
+    mood = 'cheer';
+    text = last ? TALK.last[0] : combo >= 3 ? pick(TALK.combo, pkey) : pick(TALK.ok, pkey);
+  } else if (verdict) {
+    mood = 'think';
+    text = pick(TALK.no, pkey);
+  } else if (hintLv > 0) {
+    mood = 'think';
+    text = pick(TALK.hint, pkey + hintLv);
+  } else text = pick(twin ? TALK.twin : TALK.start, pkey);
+  return (
+    <div className={'buddy' + (verdict ? (verdict.ok ? ' ok' : ' no') : '')} aria-live="polite">
+      <Mascot mood={mood} size={56} key={verdict ? (verdict.ok ? 'o' : 'x') : 'q'} />
+      <div className="buddy-bubble">{text}</div>
     </div>
   );
 }

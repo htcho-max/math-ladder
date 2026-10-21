@@ -241,6 +241,17 @@ export function SettingsPage({ parent = false }: { parent?: boolean }) {
           </div>
         </div>
         <div className="frow">
+          <span>문제 풀 때 셈이</span>
+          <div className="seg">
+            <button className={s.settings.buddy !== false ? 'on' : ''} onClick={() => updateSettings({ buddy: true })}>
+              보이기
+            </button>
+            <button className={s.settings.buddy === false ? 'on' : ''} onClick={() => updateSettings({ buddy: false })}>
+              숨기기
+            </button>
+          </div>
+        </div>
+        <div className="frow">
           <span>문제 읽어 주기</span>
           <div className="seg">
             {([
