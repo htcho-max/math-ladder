@@ -122,13 +122,16 @@ function buildPlan(mode: PracticeMode): Plan | null {
       startLevel: mode.top ? 4 : mode.hard ? 3 : startLevel(base),
       unitId: u.id,
       adaptive: !mode.hard && !mode.top,
-      next(_i, level, prev) {
+      next(i, level, prev) {
         let skillId = sk?.id;
         if (!skillId) {
           const dd = getState().data;
+          // 심화 도전: 3문제 중 2문제는 심화 전용 유형에서
+          const hardPool = mode.hard ? pool.filter((s) => s.hard) : [];
+          const from = hardPool.length && i % 3 !== 2 ? hardPool : pool;
           // 약한 유형 위주, 직전 유형은 피함
-          const ranked = pool
-            .filter((s) => s.id !== prev || pool.length === 1)
+          const ranked = from
+            .filter((s) => s.id !== prev || from.length === 1)
             .map((s) => ({ id: s.id, w: skillScore(dd, u.id, s.id) + Math.random() * 45 }))
             .sort((a, b) => a.w - b.w);
           skillId = ranked[0].id;

@@ -49,6 +49,8 @@ export interface Skill {
   title: string;
   /** 문제 생성기: 같은 rng 시드면 같은 문제가 나와야 함 (Math.random 금지) */
   gen: (r: Rng, level: GenLevel) => ProblemDraft;
+  /** 심화 전용으로 만든 유형 (심화 도전에서 먼저 나옴) */
+  hard?: boolean;
 }
 
 export interface Concept {

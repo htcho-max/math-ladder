@@ -9,6 +9,10 @@ import { WORDS3 } from './e34/words3';
 import { WORDS4 } from './e34/words4';
 import { HARD3, TOP3 } from './e34/hard3';
 import { HARD4, TOP4 } from './e34/hard4';
+import { MORE_E3A, MORE_TOP_E3A } from './e34/more-e3a';
+import { MORE_E3B, MORE_TOP_E3B } from './e34/more-e3b';
+import { MORE_E4A, MORE_TOP_E4A } from './e34/more-e4a';
+import { MORE_E4B, MORE_TOP_E4B } from './e34/more-e4b';
 
 /** 생성된 문제의 '숫자+조사'를 읽기에 맞게 교정 */
 function fixDraft(d: ProblemDraft): ProblemDraft {
@@ -26,9 +30,11 @@ function fixDraft(d: ProblemDraft): ProblemDraft {
 
 /** 문장제·심화 추가 유형 (단원 id → 유형들). 기존 유형 뒤에 붙임 (기존 id 는 그대로) */
 const EXTRA: Record<string, Skill[]> = {};
-for (const m of [WORDS3, WORDS4, HARD3, HARD4]) for (const [id, sks] of Object.entries(m)) EXTRA[id] = [...(EXTRA[id] ?? []), ...sks];
+for (const m of [HARD3, HARD4, MORE_E3A, MORE_E3B, MORE_E4A, MORE_E4B]) for (const sks of Object.values(m)) for (const s of sks) s.hard = true;
+for (const m of [WORDS3, WORDS4, HARD3, HARD4, MORE_E3A, MORE_E3B, MORE_E4A, MORE_E4B]) for (const [id, sks] of Object.entries(m)) EXTRA[id] = [...(EXTRA[id] ?? []), ...sks];
 /** 최상위 유형 (UnitContent.top) */
-const TOP: Record<string, Skill[]> = { ...TOP3, ...TOP4 };
+const TOP: Record<string, Skill[]> = {};
+for (const m of [TOP3, TOP4, MORE_TOP_E3A, MORE_TOP_E3B, MORE_TOP_E4A, MORE_TOP_E4B]) for (const [id, sks] of Object.entries(m)) TOP[id] = [...(TOP[id] ?? []), ...sks];
 
 const wrapSkill = (s: Skill): Skill => ({
   ...s,

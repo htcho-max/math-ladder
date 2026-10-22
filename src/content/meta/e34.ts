@@ -1,6 +1,10 @@
 import type { MetaMap } from '../meta';
+import { MORE_CATS_E3A } from './more-e3a';
+import { MORE_CATS_E3B } from './more-e3b';
+import { MORE_CATS_E4A } from './more-e4a';
+import { MORE_CATS_E4B } from './more-e4b';
 
-export const META: MetaMap = {
+const BASE: MetaMap = {
   // ───────── 초3-1
   'e3a-1': {
     pitfalls: [
@@ -276,3 +280,8 @@ export const META: MetaMap = {
     },
   },
 };
+
+// v0.11 심화 추가분 분류를 합침
+export const META: MetaMap = Object.fromEntries(
+  Object.entries(BASE).map(([id, m]) => [id, { ...m, cats: { ...m.cats, ...MORE_CATS_E3A[id], ...MORE_CATS_E3B[id], ...MORE_CATS_E4A[id], ...MORE_CATS_E4B[id] } }]),
+);
